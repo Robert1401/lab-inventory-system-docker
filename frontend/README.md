@@ -1,59 +1,43 @@
-# Frontend
+# Proyecto Laboratorio de Electrónica
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.0.
+## Descripción
+Este proyecto consiste en el desarrollo de un sistema web para la gestión de inventario y préstamos del laboratorio de Electrónica Analógica del Instituto Tecnológico de Saltillo.
 
-## Development server
+El sistema busca automatizar el proceso de préstamo de material utilizado en las prácticas académicas, permitiendo un mejor control del inventario y reduciendo el trabajo manual realizado por los encargados del laboratorio.
 
-To start a local development server, run:
+## Justificación del proyecto
+El desarrollo de este sistema resulta adecuado para la asignatura de Integración y Despliegue Continuos, ya que permite aplicar de manera práctica conceptos fundamentales como el control de versiones, la integración continua y el despliegue continuo, utilizando herramientas modernas de desarrollo de software.
 
+Asimismo, el proyecto es viable dentro del tiempo del curso y tiene relevancia académica, ya que responde a una necesidad real del entorno educativo.
+
+## Propósito
+El propósito principal del sistema es mejorar la gestión de los préstamos de material del laboratorio, facilitando el registro, control y seguimiento del inventario, así como agilizar el proceso tanto para los estudiantes como para el personal responsable.
+
+## Alcance inicial (MVP)
+En su versión inicial, el sistema contempla las siguientes funcionalidades básicas:
+- Registro y consulta de material del laboratorio.
+- Control de préstamos y devoluciones.
+- Gestión básica de usuarios.
+- Visualización del estado del inventario.
+
+Este alcance permite contar con un producto mínimo viable que podrá ampliarse conforme avance el curso.
+
+## Tecnologías utilizadas
+- Frontend: Angular
+- Backend: Node.js con Express
+- Base de datos: MySQL
+- Contenedores: Docker y Docker Compose
+- Control de versiones: Git
+- Plataforma de repositorio: GitLab
+
+## Requisitos
+- Node.js
+- Docker
+- Docker Compose
+- Git
+
+## Instalación y ejecución
+1. Clonar el repositorio:
 ```bash
-ng serve
-```
+git clone https://gitlab.com/robertoa1401/proyecto-laboratorio-electronica.git
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
