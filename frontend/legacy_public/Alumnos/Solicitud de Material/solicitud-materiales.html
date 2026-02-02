@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solicitud de Materiales (Alumnos)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="solicitud-materiales.css" />
+</head>
+
+<body>
+  <div class="container">
+    <!-- ENCABEZADO -->
+    <header>
+      <img src="../../assets/logo1.png" alt="TecNM" class="logo"/>
+      <div class="titulo">
+        <h1>SOLICITUD DEPARTAMENTO DE</h1>
+        <h2>INGENIERÍA ELÉCTRICA–ELECTRÓNICA</h2>
+        <h3>MATERIALES</h3>
+      </div>
+      <img src="../../assets/escudo.png" alt="Escudo" class="logo"/>
+    </header>
+
+    <!-- TARJETA / ÁREA DE TRABAJO -->
+    <section class="card">
+      <!-- FILA 1: Fecha / Hora / Número de vale / Auxiliar -->
+      <div class="top-row">
+        <div class="field-line">
+          <label for="fecha">Fecha:</label>
+          <input type="date" id="fecha" class="input-line"/>
+        </div>
+
+        <div class="field-line">
+          <label for="hora">Hora:</label>
+          <input type="time" id="hora" class="input-line"/>
+        </div>
+
+        <div class="field-line">
+          <label for="folio">Número de vale:</label>
+          <input type="text" id="folio" class="input-line" readonly/>
+        </div>
+
+        <div class="field-line">
+          <label for="auxiliar">Auxiliar:</label>
+          <select id="auxiliar" class="input-line">
+            <option value="">Seleccione auxiliar…</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- FILA 2: Docente / Carrera / Alumno / Materia / Mesa -->
+      <div class="top-row">
+        <div class="field-line">
+          <label for="docente">Docente:</label>
+          <select id="docente" class="input-line">
+            <option value="">Seleccione docente…</option>
+          </select>
+        </div>
+
+        <div class="field-line">
+          <label for="carrera">Carrera:</label>
+          <input
+            type="text"
+            id="carrera"
+            class="input-line"
+            placeholder="Ej. Ing. en Sistemas Computacionales"
+          />
+        </div>
+
+        <div class="field-line">
+          <label for="alumno">Alumno:</label>
+          <input
+            type="text"
+            id="alumno"
+            class="input-line"
+            placeholder="Nombre del alumno"
+          />
+        </div>
+
+        <div class="field-line">
+          <label for="materiaAcad">Materia:</label>
+          <select id="materiaAcad" class="input-line">
+            <option value="">Seleccione materia…</option>
+          </select>
+        </div>
+
+        <div class="field-line">
+          <label for="mesa">Mesa:</label>
+          <select id="mesa" class="input-line">
+            <option value="">Seleccione mesa…</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- FILA 3: Material (finder) / Cantidad / Agregar -->
+      <div class="middle-row">
+        <!-- MATERIAL: buscador -->
+        <div class="field">
+          <label for="materialSearch">Material:</label>
+
+          <div class="finder" id="finder">
+            <i class="fa-solid fa-magnifying-glass finder-icon" aria-hidden="true"></i>
+
+            <!-- Input visible -->
+            <input
+              id="materialSearch"
+              type="text"
+              placeholder="Buscar material…"
+              autocomplete="off"
+              aria-autocomplete="list"
+              aria-expanded="false"
+              aria-controls="finderList"
+              aria-haspopup="listbox"
+            />
+
+            <!-- Valor real (id_Material) que usa el JS -->
+            <input type="hidden" id="material" value="" />
+
+            <!-- Lista de sugerencias -->
+            <div
+              class="finder-list hidden"
+              id="finderList"
+              role="listbox"
+              aria-label="Materiales disponibles"
+            ></div>
+          </div>
+        </div>
+
+        <div class="field qty-wrap">
+          <label for="cantidad">Cantidad:</label>
+          <div class="cantidad-container">
+            <input type="number" id="cantidad" min="1" value="1"/>
+            <button id="plusQty" class="btn btn-add" title="Aumentar cantidad">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="agregar" title="Agregar a la tabla">
+          Agregar
+        </button>
+      </div>
+
+      <!-- TABLA -->
+      <div class="content-row">
+        <div class="tabla">
+          <table id="tablaMateriales">
+            <thead>
+              <tr>
+                <th>Nombre del producto</th>
+                <th>Cantidad</th>
+                <th>Fecha de ingreso del material</th>
+                <th style="width:140px">Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer-bar">
+      <div class="left-actions">
+        <button class="btn btn-primary" id="guardar">
+          <i class="fas fa-save"></i> Guardar solicitud
+        </button>
+
+        <button
+          class="btn btn-danger"
+          id="cancelarPedido"
+          title="Cancelar materiales en espera"
+        >
+          <i class="fa-solid fa-rotate-left"></i> Cancelar solicitud
+        </button>
+      </div>
+
+      <div class="right-actions">
+        <button
+          class="btn btn-primary"
+          id="btnVerCompras"
+          title="Ver solicitud de hoy"
+        >
+          <i class="fa-solid fa-receipt"></i> Ver la solicitud
+        </button>
+
+        <div class="iconos">
+          <a
+            href="../alumnos-inicial.html"
+            class="icono home-fab"
+            aria-label="Inicio"
+          >
+            <i class="fa-solid fa-house"></i>
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- UI centrada: Toast + Modal -->
+  <div id="ui-layer">
+    <div id="toastCenter" aria-live="polite" role="status"></div>
+
+    <div id="modalRoot" class="hidden" aria-hidden="true">
+      <div class="modal-backdrop"></div>
+      <div
+        class="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <div class="modal-icon" id="modalIcon" aria-hidden="true">!</div>
+        <h3 id="modalTitle">¿Estás seguro?</h3>
+        <p id="modalMsg">Esta acción no se puede deshacer.</p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-danger" id="modalAccept">Sí</button>
+          <button type="button" class="btn btn-primary" id="modalCancel">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../src/solicitud-materiales.js"></script>
+</body>
+</html>

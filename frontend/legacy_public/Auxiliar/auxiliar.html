@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Menú Principal</title>
+
+  <!-- Cache busting: cambia el número si no ves cambios -->
+  <link rel="stylesheet" href="auxiliar.css?v=999" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+  <!-- Fondo -->
+  <div class="bg"></div>
+  <div class="bg-grid"></div>
+
+  <main class="stage">
+    <section class="panel" role="region" aria-label="Menú principal">
+      <div class="topbar">
+        <img class="brand left" src="../assets/logo1.png" alt="TecNM">
+        <div class="brand mid">
+          <div class="mid-badge" title="Laboratorio">
+            <img src="../assets/Burrito.png" alt="Burrito">
+          </div>
+        </div>
+        <img class="brand right" src="../assets/escudo.png" alt="Escudo">
+      </div>
+
+      <header class="hero">
+        <h1>Bienvenido, <span id="userFirst">Usuario</span></h1>
+        <p>Menú Principal</p>
+      </header>
+
+      <section class="grid" aria-label="Módulos">
+        <button class="card" onclick="irA('Carreras/carreras.html')">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <span>Carreras</span>
+        </button>
+
+        <button class="card" onclick="irA('Materias/agregar-materias.html')">
+          <i class="fa-solid fa-book"></i>
+          <span>Materias</span>
+        </button>
+
+        <button class="card" onclick="irA('Usuarios/usuarios.html')">
+          <i class="fa-solid fa-users"></i>
+          <span>Usuarios</span>
+        </button>
+
+        <button class="card" onclick="irA('Registro/Registro-Compras.html')">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <span>Registro de Compra<br>de material</span>
+        </button>
+
+        <button class="card" onclick="irA('Material/agregar-material.html')">
+          <i class="fa-solid fa-cubes"></i>
+          <span>Material</span>
+        </button>
+
+        <button class="card" onclick="irA('Prestamos/Prestamos.html')">
+          <i class="fa-solid fa-handshake"></i>
+          <span>Préstamos</span>
+        </button>
+
+        <button class="card" onclick="irA('Asesorias/asesorias.html')">
+          <i class="fa-solid fa-chalkboard-user"></i>
+          <span>Asesorías</span>
+        </button>
+
+        <button class="card" onclick="irA('Reporte-especialidad/Reporte-especialidad.html')">
+          <i class="fa-solid fa-file-lines"></i>
+          <span>Reporte<br>especialidad</span>
+        </button>
+      </section>
+
+      <footer class="foot">
+        <small>© TecNM Campus Saltillo</small>
+
+        <button class="home" type="button" onclick="irA('../Login/index.html')" title="Inicio">
+          <i class="fa-solid fa-house"></i>
+        </button>
+      </footer>
+    </section>
+  </main>
+
+  <!-- JS (cache busting también) -->
+  <script src="../src/auxiliar.js?v=999"></script>
+  <script src="../src/shimeji-auxiliar.js?v=999"></script>
+</body>
+</html>

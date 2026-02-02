@@ -1,0 +1,58 @@
+<div class="login-container">
+
+  <!-- Logos superiores -->
+  <div class="logos">
+    <img src="assets/legacy/logo1.png" alt="TecNM" class="logo-left">
+    <img src="assets/legacy/escudo.png" alt="Universidad" class="logo-right">
+  </div>
+
+  <!-- Logo central -->
+  <div class="logo-center">
+    <img src="assets/legacy/Burrito.png" alt="Logo Burro">
+  </div>
+
+  <h2>Laboratorio de Electrónica<br>Analógica</h2>
+
+  <form id="loginForm" (ngSubmit)="onSubmit()">
+
+    <div class="input-container">
+      <i class="fa-solid fa-id-card"></i>
+      <input
+        type="text"
+        name="numeroControl"
+        placeholder="Número de control"
+        inputmode="numeric"
+        autocomplete="username"
+        required
+        [(ngModel)]="numeroControl"
+      />
+    </div>
+
+    <div class="input-container">
+      <i class="fa-solid fa-lock"></i>
+      <input
+        type="password"
+        name="password"
+        placeholder="Contraseña"
+        autocomplete="current-password"
+        required
+        [(ngModel)]="password"
+      />
+    </div>
+
+    <button type="submit" [disabled]="loading">
+      {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
+    </button>
+  </form>
+
+  <div class="register-text">
+    ¿Es tu primera vez? <a href="public/Registro/registro.html">Regístrate aquí</a>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" [class.show]="toastVisible">
+  <div class="card" [ngClass]="toastType" *ngIf="toastMessage">
+    {{ toastMessage }}
+  </div>
+</div>

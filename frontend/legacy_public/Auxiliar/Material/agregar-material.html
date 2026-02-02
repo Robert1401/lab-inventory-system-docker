@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRUD Material</title>
+
+  <link rel="stylesheet" href="material.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js" defer></script>
+  <script src="../../src/material.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="../../assets/logo1.png" alt="Logo TecNM" class="logo">
+      <h1>Materiales</h1>
+      <img src="../../assets/escudo.png" alt="Escudo" class="logo">
+    </header>
+
+    <div class="fila">
+      <!-- Formulario -->
+      <div class="formulario">
+        <label for="clave">Clave:</label>
+        <input
+          type="text"
+          id="clave"
+          placeholder="Ej. MAT-001"
+          autocomplete="off"
+          maxlength="10"
+        >
+        <small id="stockHint" class="hint">
+          Escribe primero la clave para habilitar el nombre.
+        </small>
+
+        <label for="nombre">Nombre:</label>
+        <input
+          type="text"
+          id="nombre"
+          placeholder="Ingrese el nombre del material"
+          autocomplete="off"
+        >
+
+        <!-- NUEVO: Máx. por alumno -->
+        <label for="maximo">Máx. por alumno (piezas):</label>
+        <input
+          type="number"
+          id="maximo"
+          min="1"
+          max="999"
+          step="1"
+          placeholder="Ej. 1, 2, 5, 10…"
+          autocomplete="off"
+        >
+        <small class="hint">
+          Este valor indica cuántas piezas de este material puede solicitar un alumno como máximo por vale.
+        </small>
+      </div>
+
+      <!-- Tabla -->
+      <div class="tabla">
+        <!-- SOLO ESTA ÁREA BLANCA TIENE SCROLL -->
+        <div class="tabla-scroll">
+          <table id="tablaMateriales">
+            <thead>
+              <tr>
+                <th>Clave</th>
+                <th>Nombre</th>
+                <th>Máx. por alumno</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <button class="btn" id="btnGuardar">
+        <i class="fa-solid fa-floppy-disk"></i> Guardar
+      </button>
+      <button class="btn" id="btnActualizar">
+        <i class="fa-solid fa-rotate"></i> Actualizar
+      </button>
+      <button class="btn" id="btnEliminar">
+        <i class="fa-solid fa-trash"></i> Eliminar
+      </button>
+
+      <div class="iconos">
+        <a href="../auxiliar.html" class="icono icono-home" title="Inicio" aria-label="Inicio">
+          <svg viewBox="0 0 24 24" class="svg-icon">
+            <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z" fill="currentColor"/>
+          </svg>
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Root para modales / toasts -->
+  <div id="modal-root" aria-live="polite"></div>
+</body>
+</html>

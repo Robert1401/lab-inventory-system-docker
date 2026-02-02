@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reportes</title>
+
+  <link rel="stylesheet" href="reportes.css">
+</head>
+<body>
+  <div class="container">
+    <div class="content-card">
+      <!-- Header -->
+      <header class="header">
+        <img src="../../assets/logo1.png" alt="Logo TecNM" class="logo">
+        <div class="header-title-wrapper">
+          <h1 class="header-title">REPORTES</h1>
+          <div class="header-line"></div>
+        </div>
+        <img src="../../assets/escudo.png" alt="Escudo ITS" class="logo">
+      </header>
+
+      <!-- Tarjetas -->
+      <section class="reports-grid">
+        <article class="report-card">
+          <div class="report-emoji" aria-hidden="true">📦</div>
+          <h2 class="report-title">Reporte de inventario</h2>
+          <button class="btn-primary" id="btnInv">Generar</button>
+        </article>
+
+        <article class="report-card">
+          <div class="report-emoji" aria-hidden="true">🧰</div>
+          <h2 class="report-title">Reporte de material</h2>
+          <button class="btn-primary" id="btnMov">Generar</button>
+        </article>
+
+        <article class="report-card">
+          <div class="report-emoji" aria-hidden="true">📚</div>
+          <h2 class="report-title">Reporte de asesorías</h2>
+          <button class="btn-primary" id="btnAse">Generar</button>
+        </article>
+      </section>
+
+      <!-- Navegación -->
+      <div class="nav-icons">
+        <a href="../auxiliar.html" class="nav-icon" title="Inicio" aria-label="Inicio">
+          <svg viewBox="0 0 24 24" class="svg-icon">
+            <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z" fill="currentColor"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay de aviso centrado (se inyecta/usa desde reportes.js) -->
+  <div id="center-overlay" aria-live="polite" aria-atomic="true" hidden>
+    <div class="co-backdrop"></div>
+    <div class="co-card" role="dialog" aria-modal="true">
+      <div class="co-icon" id="coIcon" aria-hidden="true">⏳</div>
+      <h3 class="co-title" id="coTitle">Espérame tantito…</h3>
+      <p class="co-text" id="coText">Preparando el reporte</p>
+      <div class="co-bar"><div class="co-progress" id="coProgress"></div></div>
+    </div>
+  </div>
+
+  <script src="../../src/reportes.js"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de compras — Recibo</title>
+  <link rel="stylesheet" href="compras.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <div class="frame">
+    <header class="app">
+      <img src="../../assets/logo1.png" alt="TecNM" class="logo"/>
+      <h1>Registro de compras general</h1>
+      <img src="../../assets/escudo.png" alt="Escudo" class="logo"/>
+    </header>
+
+    <div class="bar"></div>
+
+    <section class="ticket" id="ticket">
+      <!-- Buscador por fecha -->
+      <div class="search" role="search">
+        <div class="box">
+          <i class="fa-solid fa-magnifying-glass ico" aria-hidden="true"></i>
+          <input id="qFecha" placeholder="dd/mm/aaaa" aria-label="Buscar por fecha (dd/mm/aaaa)">
+          <button id="btnBuscar" class="btn" type="button">Buscar</button>
+        </div>
+      </div>
+
+      <div class="head">
+        <div class="title">Recibo</div>
+        <div class="meta" id="fechaMeta">Todas las compras</div>
+      </div>
+
+      <div class="body">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:140px;">N. Compra</th>
+              <th style="width:160px;">Cantidad total</th>
+              <th style="width:200px;">Fecha de ingreso</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyRecibo">
+            <tr><td colspan="3" class="empty">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="foot">
+        <span class="tag" id="auxInfo">Auxiliar: —</span>
+        <span class="tag" id="totalesInfo">0 registros</span>
+      </div>
+    </section>
+
+    <!-- FABs fijos -->
+    <div class="nav" aria-label="Navegación flotante">
+      <button class="fab" id="navBack" title="Regresar" aria-label="Regresar">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <a class="fab" href="../auxiliar.html" title="Inicio" aria-label="Inicio">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </div>
+  </div>
+
+  <script src="../../src/compras.js"></script>
+</body>
+</html>

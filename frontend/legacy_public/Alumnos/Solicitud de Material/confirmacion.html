@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Confirmación de Pedido</title>
+
+  <link rel="stylesheet" href="confirmacion.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="frame">
+    <section aria-label="Confirmación de pedido">
+      <!-- Header -->
+      <header>
+        <div class="logos">
+          <img class="logo" src="../../assets/logo1.png" alt="Secretaría de Educación">
+        </div>
+        <h1 class="title">
+          SOLICITUD DEPARTAMENTO DE<br>
+          INGENIERÍA ELÉCTRICA–ELECTRÓNICA
+        </h1>
+        <div class="logos" style="justify-content:flex-end">
+          <img class="logo" src="../../assets/escudo.png" alt="TecNM">
+        </div>
+      </header>
+
+      <!-- Panel -->
+      <div class="panel">
+        <h2 class="panel-title">Pedido</h2>
+
+        <div class="pedido-wrap">
+          <!-- META -->
+          <div class="pedido-meta" role="group" aria-label="Datos del pedido">
+            <div class="meta-row row-1">
+              <div class="meta-item"><b>Alumno:</b> <span id="metaAlumno">—</span></div>
+              <div class="meta-item"><b>Fecha:</b>  <span id="metaFecha">—</span></div>
+              <div class="meta-item"><b>Hora:</b>   <span id="metaHora">—</span></div>
+              <div class="meta-item"><b>No. vale:</b> <span id="metaVale">—</span></div>
+            </div>
+
+            <div class="meta-row row-2">
+              <div class="meta-item"><b>Materia:</b> <span id="metaMateria">—</span></div>
+              <div class="meta-item"><b>Maestro:</b> <span id="metaMaestro">—</span></div>
+              <div class="meta-item"><b>Mesa:</b>    <span id="metaMesa">—</span></div>
+            </div>
+          </div>
+
+          <!-- TABLA -->
+          <div class="tabla-wrap soft">
+            <h3 class="table-title">Materiales solicitados</h3>
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th style="width:140px">Cantidad</th>
+                  <th>Descripción</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyPedido"></tbody>
+            </table>
+
+            <div id="emptyState" class="empty-state" hidden>
+              <i class="fa-solid fa-box-open" aria-hidden="true"></i>
+              <p>No hay materiales en el pedido.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Por si algún día agregas algo aquí -->
+        <div class="actions" id="actions"></div>
+      </div>
+    </section>
+
+    <!-- FOOTER PEQUEÑO: casita adentro del cuadro blanco -->
+    <footer class="footer-confirm">
+      <div class="iconos">
+        <button
+          id="btnHome"
+          class="icono"
+          type="button"
+          aria-label="Regresar al menú de alumnos"
+        >
+          <i class="fa-solid fa-house"></i>
+        </button>
+      </div>
+    </footer>
+  </div><!-- .frame -->
+
+  <!-- Avisos / modal (se quedan por si luego los usas) -->
+  <div id="noticeHost" class="notice-host" aria-live="polite" aria-atomic="true"></div>
+  <div id="modalHost" class="modal-host" role="dialog" aria-modal="true"></div>
+
+  <script src="../../src/confirmacion.js" defer></script>
+</body>
+</html>

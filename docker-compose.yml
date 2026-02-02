@@ -1,0 +1,53 @@
+﻿version: "3.9"
+
+services:
+
+  # ==========================
+  #  MySQL
+  # ==========================
+  db:
+    image: mysql:8.0
+    container_name: inventario-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: Laboratorio_Electronica
+    ports:
+      - "3307:3306"               # MySQL visible en localhost:3307
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # ==========================
+  #  Backend Node
+  # ==========================
+  backend:
+    build:
+      context: ./backend          # usamos la carpeta backend como contexto
+      dockerfile: Dockerfile
+    container_name: inventario-backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db                 # nombre del servicio de la BD
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_DATABASE: Laboratorio_Electronica
+      DB_PORT: 3306
+      PORT: 3000
+    ports:
+      - "3000:3000"               # API en http://localhost:3000
+
+  # ==========================
+  #  Frontend Angular (Nginx)
+  # ==========================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: inventario-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "8081:80"                 # Front en http://localhost:8081

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Materias</title>
+
+  <link rel="stylesheet" href="materias.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <main class="wrap">
+    <section id="AreaTrabajo" aria-labelledby="titulo">
+      <header id="Encabezado">
+        <img src="../../assets/logo1.png" alt="Logo del Tecnológico Nacional de México" />
+        <h1 id="titulo" class="title">Materias</h1>
+        <img src="../../assets/escudo.png" alt="Logo del Instituto Tecnológico de Saltillo" />
+      </header>
+
+      <hr class="divisor" />
+
+      <form id="Formulario" autocomplete="off">
+        <div class="fila">
+          <label for="nombreMateria">Nombre de la materia</label>
+          <input
+            id="nombreMateria"
+            class="input"
+            type="text"
+            inputmode="text"
+            placeholder="Escribe..."
+            minlength="1"
+            maxlength="50"
+            required
+            autocomplete="off"
+            spellcheck="false"
+            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\-\.\(\)\/&#]+$"
+            title="Solo letras, espacios, guiones y símbolos como () / & #. Sin números."
+            oninput="
+              this.value = this.value
+                .replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s\-\.\(\)\/&#]/g, '')
+                .replace(/^\s+/, '');
+            "
+          />
+        </div>
+
+        <div class="acciones" role="group" aria-label="Acciones">
+          <button type="button" id="Guardar" class="btn" title="Guardar materia">
+            <svg class="ico" viewBox="0 0 448 512" aria-hidden="true">
+              <path fill="currentColor" d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-242.7c0-17-6.7-33.3-18.7-45.3L352 50.7C340 38.7 323.7 32 306.7 32L64 32zm32 96c0-17.7 14.3-32 32-32l160 0c17.7 0 32 14.3 32 32l0 64c0 17.7-14.3 32-32 32l-160 0c-17.7 0-32-14.3-32-32l0-64zM224 288a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
+            </svg>
+            Guardar
+          </button>
+
+          <button type="button" id="Modificar" class="btn" title="Actualiza la materia seleccionada" disabled>
+            <svg class="ico" viewBox="0 0 512 512" aria-hidden="true">
+              <path fill="currentColor" d="M480.1 192l7.9 0c13.3 0 24-10.7 24-24l0-144c0-9.7-5.8-18.5-14.8-22.2S477.9 .2 471 7L419.3 58.8C375 22.1 318 0 256 0 127 0 20.3 95.4 2.6 219.5 .1 237 12.2 253.2 29.7 255.7s33.7-9.7 36.2-27.1C79.2 135.5 159.3 64 256 64 300.4 64 341.2 79 373.7 104.3L327 151c-6.9 6.9-8.9 17.2-5.2 26.2S334.3 192 344 192l136.1 0zm29.4 100.5c2.5-17.5-9.7-33.7-27.1-36.2s-33.7 9.7-36.2 27.1c-13.3 93-93.4 164.5-190.1 164.5-44.4 0-85.2-15-117.7-40.3L185 361c6.9-6.9 8.9-17.2 5.2-26.2S177.7 320 168 320L24 320c-13.3 0-24 10.7-24 24L0 488c0 9.7 5.8 18.5 14.8 22.2S34.1 511.8 41 505l51.8-51.8C137 489.9 194 512 256 512 385 512 491.7 416.6 509.4 292.5z"/>
+            </svg>
+            Actualizar
+          </button>
+
+          <button type="button" id="Eliminar" class="btn" title="Elimina la materia seleccionada" disabled>
+            <svg class="ico" viewBox="0 0 448 512" aria-hidden="true">
+              <path fill="currentColor" d="M136.7 5.9L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-8.7-26.1C306.9-7.2 294.7-16 280.9-16L167.1-16c-13.8 0-26 8.8-30.4 21.9zM416 144L32 144 53.1 467.1C54.7 492.4 75.7 512 101 512L347 512c25.3 0 46.3-19.6 47.9-44.9L416 144z"/>
+            </svg>
+            Eliminar
+          </button>
+
+          <!-- NUEVO: botón Cancelar tipo “ghost” -->
+       <button type="button" id="Cancelar" class="btn" title="Cancelar cambios">
+  <i class="fa-solid fa-ban"></i>
+  Cancelar
+</button>
+        </div>
+      </form>
+
+      <section id="tabla" aria-label="Listado de materias">
+        <table id="tablaDinamica">
+          <thead><tr><th>Materias</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="tabla-vacia" id="tablaVacia" hidden>
+          Sin registros. Agrega una materia para comenzar.
+        </div>
+      </section>
+
+      <!-- CASITA DENTRO DEL CUADRO BLANCO -->
+      <footer class="footer">
+        <div class="iconos">
+          <a href="../auxiliar.html" class="icono" title="Inicio" aria-label="Inicio">
+            <i class="fa-solid fa-house"></i>
+          </a>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <!-- Toast overlay (avanzado) -->
+  <div id="toastOverlay" hidden></div>
+
+  <!-- Modal confirmación -->
+  <div id="confirm" class="confirm-overlay" hidden>
+    <div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="confirm-icon">❓</div>
+      <h3 id="confirm-title">Confirmación</h3>
+      <p id="confirm-text">¿Seguro que deseas continuar?</p>
+      <div class="confirm-actions">
+        <button type="button" class="btn ghost" id="confirm-cancel">Cancelar</button>
+        <button type="button" class="btn danger" id="confirm-ok">Sí, continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="../../src/materias.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asesorías – Alumno</title>
+  <!-- CSS de la vista de alumno -->
+  <link rel="stylesheet" href="asesorias-alumno.css">
+</head>
+<body>
+  <div class="container">
+    <div class="content-card">
+      <!-- Header -->
+      <header class="header">
+        <img src="../../assets/logo1.png" alt="Logo TecNM" class="logo">
+        <div class="header-title-wrapper">
+          <h1 class="header-title" id="mainTitle">ASESORÍAS DISPONIBLES</h1>
+          <div class="header-line"></div>
+        </div>
+        <img src="../../assets/escudo.png" alt="Logo Instituto" class="logo">
+      </header>
+
+      <!-- Tabs + botón limpiar -->
+      <div class="top-actions">
+        <div class="tabs">
+          <button class="tab-btn active" id="tabDisponibles" onclick="switchView('disponibles')">
+            📚 Asesorías disponibles
+          </button>
+          <button class="tab-btn" id="tabMis" onclick="switchView('mis')">
+            ✅ Mis asesorías
+          </button>
+        </div>
+        <button class="btn-clear" onclick="clearData()">
+          Limpiar datos de prueba
+        </button>
+      </div>
+
+      <!-- Vista: Asesorías disponibles -->
+      <section id="viewDisponibles">
+        <div id="listaDisponibles" class="asesorias-container"></div>
+
+        <div id="emptyDisponibles" class="empty-state">
+          <div class="empty-icon">📚</div>
+          <h2>No hay asesorías disponibles</h2>
+          <p>Cuando haya asesorías con cupo y en fecha, aparecerán aquí.</p>
+        </div>
+      </section>
+
+      <!-- Vista: Mis asesorías -->
+      <section id="viewMis" style="display:none;">
+        <div id="listaMis" class="asesorias-container"></div>
+
+        <div id="emptyMis" class="empty-state">
+          <div class="empty-icon">📚</div>
+          <h2>No estás inscrito en ninguna asesoría</h2>
+          <p>Primero inscríbete en una asesoría desde la pestaña “Asesorías disponibles”.</p>
+          <button class="btn-browse" onclick="switchView('disponibles')">
+            Ver asesorías disponibles
+          </button>
+        </div>
+      </section>
+
+      <!-- Navegación inferior -->
+      <div class="navigation">
+        <a href="../alumnos-inicial.html" class="nav-icon" title="Inicio">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="#5b0c0c" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3L4 9v12h6v-6h4v6h6V9l-8-6z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS de la vista de alumno -->
+  <script src="../../src/asesorias-alumno.js"></script>
+</body>
+</html>

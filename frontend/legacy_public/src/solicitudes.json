@@ -1,0 +1,16 @@
+[
+    {
+        "no_control": "22050788",
+        "alumno": "roberto",
+        "semestre": "7",
+        "materia": "F\u00edsica",
+        "mesa": "Mesa 2",
+        "materiales": [
+            {
+                "cantidad": "1",
+                "descripcion": "trabajo"
+            }
+        ],
+        "fecha": "2025-09-08 05:17:41"
+    }
+]

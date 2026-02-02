@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reporte de Inventario</title>
+
+  <link rel="stylesheet" href="inventario.css" />
+
+  <style>
+    @media print {
+      .nav-icons, .actions, .filters-actions, .filters-title { display: none !important; }
+      .content-card { box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="content-card">
+      <!-- Header -->
+      <header class="header" role="banner">
+        <img class="logo" src="../../assets/logo1.png" alt="Secretaría de Educación">
+        <div class="header-title-wrapper">
+          <h1 class="header-title">REPORTE DE INVENTARIO</h1>
+          <div class="header-line"></div>
+        </div>
+        <img class="logo" src="../../assets/escudo.png" alt="TecNM">
+      </header>
+
+      <!-- Filtros -->
+      <section class="filters" aria-labelledby="titulo-filtros">
+        <h2 id="titulo-filtros" class="filters-title">Filtros de búsqueda</h2>
+
+        <div class="filters-grid">
+          <!-- Estado -->
+          <div class="field">
+            <label for="filtroEstado">Buscar por estado del material</label>
+            <select id="filtroEstado" class="input">
+              <option value="">Todos</option>
+              <option>Materiales disponibles</option>
+              <option>Materiales dañados</option>
+            </select>
+          </div>
+
+          <!-- Rango de fechas (solo para dañados) -->
+          <div class="field" id="fieldFechaInicial" style="display: none;">
+            <label for="filtroFechaInicial">Fecha inicial</label>
+            <input type="date" id="filtroFechaInicial" class="input" />
+          </div>
+
+          <div class="field" id="fieldFechaFinal" style="display: none;">
+            <label for="filtroFechaFinal">Fecha final</label>
+            <input type="date" id="filtroFechaFinal" class="input" />
+          </div>
+        </div>
+
+        <div class="filters-actions">
+          <button class="btn-primary" id="btnAplicar" type="button">Aplicar filtros</button>
+          <button class="btn-secondary" id="btnLimpiar" type="button">Limpiar filtros</button>
+        </div>
+      </section>
+
+      <!-- Tabla -->
+      <section class="table-wrap" aria-describedby="hint">
+        <table class="table" role="table">
+          <thead>
+            <tr>
+              <th scope="col">Nombre material</th>
+              <th scope="col">Clave</th>
+              <th scope="col">Cantidad</th>
+            </tr>
+          </thead>
+          <tbody id="tablaInventario"></tbody>
+        </table>
+        <p id="hint" class="hint">
+          Tip: puedes exportar a Excel o imprimir en PDF con los filtros aplicados.
+        </p>
+        <p class="hint">
+          Total de piezas mostradas: <strong><span id="totalGeneral">0</span></strong>
+        </p>
+      </section>
+
+      <!-- Botones -->
+      <div class="actions">
+        <button class="btn-primary" id="btnExcel" type="button" title="Exportar a Excel (CSV)">
+          Descargar Excel
+        </button>
+        <button class="btn-primary" id="btnPDF" type="button" title="Imprimir/Guardar PDF">
+          Descargar PDF
+        </button>
+      </div>
+
+      <!-- Navegación -->
+      <div class="nav-icons">
+        <button id="btnBack" class="nav-icon" title="Regresar" aria-label="Regresar" type="button">
+          <svg viewBox="0 0 24 24" class="svg-icon" width="24" height="24" aria-hidden="true">
+            <path d="M14 7l-5 5 5 5M19 12H9"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reporte de inventario -->
+  <script src="../../src/reporte-inventario.js"></script>
+
+  <noscript>
+    <p style="text-align:center;color:#900;margin-top:1rem">
+      Para ver el reporte necesitas habilitar JavaScript.
+    </p>
+  </noscript>
+</body>
+</html>

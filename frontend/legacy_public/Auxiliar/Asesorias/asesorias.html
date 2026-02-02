@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestión de Asesorías</title>
+
+  <!-- CSS en el mismo folder que este HTML -->
+  <link rel="stylesheet" href="asesorias.css">
+</head>
+<body>
+  <div class="container">
+    <div class="content-card">
+      <!-- Header -->
+      <header class="header">
+        <img src="../../assets/logo1.png" alt="Logo TecNM" class="logo">
+        <div class="header-title-wrapper">
+          <h1 class="header-title">GESTIÓN DE ASESORÍAS</h1>
+          <div class="header-line"></div>
+        </div>
+        <img src="../../assets/escudo.png" alt="Escudo ITS" class="logo">
+      </header>
+
+      <!-- Botón crear -->
+      <div class="create-button-wrapper">
+        <button class="btn-create" onclick="openModal()">
+          <span class="plus-icon">+</span>
+          Crear nueva asesoría
+        </button>
+      </div>
+
+      <!-- Cards -->
+      <div id="asesoriasContainer" class="asesorias-container"></div>
+
+      <!-- Navegación: SOLO casita -->
+      <div class="navigation">
+        <a href="../auxiliar.html" class="nav-icon" title="Inicio" aria-label="Inicio">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="#5b0c0c">
+            <path d="M12 3 3 10.5V20a1 1 0 0 0 1 1h6v-6h4v6h6a1 1 0 0 0 1-1v-9.5L12 3z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal principal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Crear Nueva Asesoría</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <form class="modal-form" onsubmit="saveAsesoria(event)">
+        <input type="hidden" id="asesoriaId">
+       <div class="form-group">
+  <label for="materia">Materia</label>
+  <select id="materia" name="materia" required>
+    <option value="">— Selecciona materia —</option>
+  </select>
+</div>
+        <div class="form-group">
+  <label for="docente">Docente</label>
+  <select id="docente" name="docente" required>
+    <option value="">— Selecciona —</option>
+  </select>
+</div>
+        <div class="form-group">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" name="descripcion" rows="4" placeholder="Describe la asesoría..." required></textarea>
+        </div>
+        <div class="form-row">
+  <div class="form-group">
+    <label for="fecha">Fecha</label>
+    <input type="date" id="fecha" name="fecha" required>
+  </div>
+
+  <!-- NUEVO: reloj simple 24h con límite 16:00 -->
+  <div class="form-group">
+    <label>Hora (inicio – fin)</label>
+    <div class="time-row">
+      <select id="horaIni" aria-label="Hora inicio"></select>
+      <span class="time-sep">—</span>
+      <select id="horaFin" aria-label="Hora fin"></select>
+    </div>
+    <small class="help">Máximo permitido: terminar a las 16:00</small>
+  </div>
+</div>
+        <div class="form-group">
+          <label for="cupo">Cupo Total</label>
+          <input type="number" id="cupo" name="cupo" min="1" max="50" placeholder="Ej: 10" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal()">❌ Cancelar</button>
+          <button type="submit" class="btn-save">✅ Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal alumnos -->
+  <div id="studentsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="studentsModalTitle">Alumnos Inscritos</h2>
+        <button class="modal-close" onclick="closeStudentsModal()">&times;</button>
+      </div>
+      <div class="students-list" id="studentsList"></div>
+    </div>
+  </div>
+
+  <!-- JS (rutas como tu proyecto) -->
+  <script src="../../src/asesorias.js"></script>
+  <script src="../../src/notify.js"></script>
+</body>
+</html>

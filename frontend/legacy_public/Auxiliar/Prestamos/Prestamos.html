@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Solicitud — Depto. Ingeniería Eléctrica–Electrónica</title>
+  <link rel="stylesheet" href="Prestamos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Encabezado -->
+    <header>
+      <img class="logo" src="../../assets/logo1.png" alt="Educación">
+      <div style="text-align:center">
+        <h1>SOLICITUD DEPARTAMENTO DE<br>INGENIERÍA ELÉCTRICA–ELECTRÓNICA</h1>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center">
+        <img class="logo" src="../../assets/escudo.png" alt="Escudo">
+      </div>
+    </header>
+
+    <!-- Tarjeta / formulario visual -->
+    <section class="tabla">
+      <!-- fila de metadatos -->
+      <div class="meta-row">
+        <div class="meta">
+          <span class="lbl">Fecha:</span>
+          <span class="val" id="fldFecha">— — —</span>
+        </div>
+        <div class="meta">
+          <span class="lbl">Hora:</span>
+          <span class="val" id="fldHora">— — —</span>
+        </div>
+        <div class="meta">
+          <span class="lbl">No. vale:</span>
+          <span class="val" id="fldNoVale">— — —</span>
+        </div>
+      </div>
+
+      <!-- títulos de secciones -->
+      <div class="titles">
+        <div class="subt">Laboratorio de electrónica analógica</div>
+        <div class="right">
+          <div class="line">
+            <label>Materia:</label>
+            <input id="fldMateria" type="text" readonly placeholder="—">
+          </div>
+          <div class="line">
+            <label>Maestro:</label>
+            <input id="fldMaestro" type="text" readonly placeholder="—">
+          </div>
+          <div class="line">
+            <label>Mesa:</label>
+            <input id="fldMesa" type="text" readonly placeholder="—">
+          </div>
+          <div class="line">
+            <label>N. Control de quien lo pidió</label>
+            <input id="fldNoControl" type="text" readonly placeholder="—">
+          </div>
+        </div>
+      </div>
+
+      <!-- tabla de materiales -->
+      <div class="grid">
+        <table>
+          <thead>
+            <tr>
+              <th>Alumno</th>
+              <th>Materiales solicitados</th>
+              <th style="width:140px;">Cantidad total</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyMat">
+            <tr><td colspan="4" class="empty">Sin materiales</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Botonera -->
+      <div class="actions">
+        <button id="btnAprobar"  class="btn btn-ok">
+          <i class="fa-solid fa-check"></i> Aprobar
+        </button>
+        <button id="btnRechazar" class="btn btn-no">
+          <i class="fa-solid fa-xmark"></i> Rechazar
+        </button>
+        <!-- NUEVO: botón para ir al historial -->
+        <button id="btnVerHistorial" class="btn btn-neutral">
+          <i class="fa-solid fa-list"></i> Ver historial
+        </button>
+      </div>
+    </section>
+
+    <!-- Home flotante abajo-derecha (sin flecha) -->
+    <a class="fab-home" href="../auxiliar.html" title="Menú principal">
+      <i class="fa-solid fa-house"></i>
+    </a>
+  </div>
+
+  <div id="notify"></div>
+  <script src="../../src/Prestamos.js" defer></script>
+</body>
+</html>

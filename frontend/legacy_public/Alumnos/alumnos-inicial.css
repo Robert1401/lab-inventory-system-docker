@@ -1,0 +1,162 @@
+:root{
+  --brand:#5b0c0c;        /* guinda oscuro */
+  --brand-hot:#cf0b0b;    /* guinda brillante hover */
+  --ink:#2b2b2b;
+  --muted:#6a6a6a;
+  --card:#ffffff;
+}
+
+/* ===== Base ===== */
+*,*::before,*::after{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0;
+  font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 420px at 78% 50%, rgba(0,0,0,.24) 0 60%, rgba(0,0,0,.52) 100%),
+    linear-gradient(140deg, #3e0507 0%, #6c0a0c 35%, #9d0e10 65%, #300406 100%);
+  display:flex; align-items:center; justify-content:center; padding:16px;
+}
+
+/* ===== Frame ===== */
+.frame{
+  width:min(1120px,96vw); min-height:68vh; background:#fff; border-radius:18px;
+  position:relative; padding:26px 24px 18px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.45) inset, 0 22px 60px rgba(0,0,0,.35);
+}
+.frame::before{
+  content:""; position:absolute; inset:-2px; border-radius:20px;
+  box-shadow:0 0 22px 6px rgba(255,255,255,.65); pointer-events:none;
+}
+
+/* ===== Header ===== */
+header{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:16px; }
+header .logos{ display:flex; gap:16px; align-items:center; }
+.logo{ width:92px; height:auto; object-fit:contain; filter:grayscale(10%); }
+h1{ margin:0; text-align:center; font-size:clamp(16px,2.2vw,19px); font-weight:800; letter-spacing:.4px; }
+.spacer{ height:14px }
+
+/* ===== Grid de tarjetas ===== */
+.grid3{ display:grid; gap:22px; grid-template-columns:repeat(3,1fr) }
+@media (max-width:900px){ .grid3{ grid-template-columns:1fr } }
+
+/* ===== Card ===== */
+.card{
+  position:relative; background:var(--card); border-radius:18px; padding:22px 18px 20px;
+  text-align:center; display:flex; flex-direction:column; align-items:center;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 8px 24px rgba(0,0,0,.10);
+  transform:translateZ(0);
+  transition:transform .16s ease, box-shadow .18s ease, filter .18s ease;
+  text-decoration:none; color:inherit;
+}
+.card::after{
+  content:""; position:absolute; inset:0; border-radius:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.28), transparent 42%);
+  opacity:0; transition:opacity .18s ease; pointer-events:none;
+}
+.card i{ font-size:56px; color:var(--brand); margin-bottom:8px; transition:filter .18s ease; }
+.card h3{ margin:6px 0 10px; color:var(--brand); font-size:clamp(15px,2vw,18px); line-height:1.15 }
+.card p{ margin:0; font-size:14px; color:#222; }
+
+/* Hover */
+.card:hover{
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 12px 34px rgba(0,0,0,.18), 0 0 0 1px rgba(255,255,255,.5) inset;
+  filter:drop-shadow(0 0 10px rgba(255,255,255,.55));
+}
+.card:hover::after{ opacity:.65 }
+.card:hover i{ filter:drop-shadow(0 0 6px rgba(255,255,255,.85)) }
+.card.card--link:hover{
+  filter:drop-shadow(0 0 10px rgba(255,255,255,.55)) drop-shadow(0 0 12px rgba(93,12,12,.55));
+}
+
+/* ===== Tarjeta deshabilitada y badge ===== */
+.card.disabled{
+  pointer-events:none;
+  opacity:.55;
+  filter:grayscale(1);
+}
+.card .card-header{ position:relative; }
+.card-badge{
+  position:absolute; top:10px; right:10px;
+  background:#b20e10; color:#fff;
+  padding:2px 10px; border-radius:999px;
+  font-weight:800; font-size:12px;
+  box-shadow:0 4px 10px rgba(178,14,16,.35);
+}
+
+/* ===== Footer nav ===== */
+.footer-nav{ display:flex; gap:16px; justify-content:flex-end; align-items:center; padding:12px 6px 2px; }
+.nav-icon{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px; border-radius:50%;
+  background:#fff;
+  box-shadow:0 6px 16px rgba(0,0,0,.18), 0 0 0 1px #ececf1 inset;
+  transition:transform .16s ease, box-shadow .2s ease, filter .2s ease;
+}
+.nav-icon svg{
+  width:38px; height:38px; fill:none; stroke:var(--brand); stroke-width:3; stroke-linecap:round; stroke-linejoin:round;
+}
+.nav-icon.home svg{ stroke:none; fill:var(--brand) }
+.nav-icon:hover{
+  transform:translateY(-2px) scale(1.04);
+  box-shadow:0 14px 26px rgba(0,0,0,.26), 0 0 0 1px #ececf1 inset;
+  filter:drop-shadow(0 0 6px rgba(255,255,255,.7));
+}
+.nav-icon:hover svg{ stroke:var(--brand-hot) }
+.nav-icon.home:hover svg{ fill:var(--brand-hot); filter:drop-shadow(0 0 6px rgba(207,11,11,.65)) }
+
+/* ===== Notice & Modal centrados ===== */
+.notice-host,.modal-host{
+  position:fixed; inset:0; z-index:9999; display:none;
+  align-items:center; justify-content:center; padding:16px;
+}
+.modal-host::before{
+  content:""; position:absolute; inset:0; background:rgba(0,0,0,.35); backdrop-filter:blur(2px);
+}
+.notice-card,.modal-card{
+  position:relative; max-width:min(520px,92vw); border-radius:16px; background:#fff;
+  box-shadow:0 22px 60px rgba(0,0,0,.28), inset 0 0 0 1px #eee;
+  padding:20px 18px; text-align:left; transform:translateY(10px) scale(.98); opacity:0;
+  transition:transform .18s ease, opacity .18s ease;
+}
+.notice-host.show .notice-card,.modal-host.show .modal-card{ transform:translateY(0) scale(1); opacity:1 }
+.notice-head,.modal-head{ display:flex; align-items:center; gap:12px; margin-bottom:8px }
+.notice-icon{
+  width:42px; height:42px; border-radius:12px; display:grid; place-items:center; font-size:22px; color:#fff;
+}
+.notice-icon.success{ background:#16a34a }
+.notice-icon.info{    background:#2563eb }
+.notice-icon.warn{    background:#d97706 }
+.notice-icon.error{   background:#dc2626 }
+.notice-title,.modal-title{ margin:0; font-weight:800; font-size:18px; color:#111 }
+.notice-msg,.modal-msg{ margin:6px 0 0; color:#333; line-height:1.4 }
+.notice-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:14px }
+
+/* Botones modales */
+.btn{
+  appearance:none; border:none; cursor:pointer; font-weight:700;
+  border-radius:12px; padding:10px 16px;
+  transition:transform .08s ease, box-shadow .15s ease, filter .15s ease;
+}
+.btn:active{ transform:translateY(1px) }
+.btn-primary{
+  color:#fff; background:linear-gradient(180deg,#b8191b,#a11214 60%,#8f0f11);
+  box-shadow:0 10px 20px rgba(178,14,16,.35);
+}
+.btn-ghost{ color:#b8191b; background:#fff; box-shadow:inset 0 0 0 1px #e6e6ec }
+
+/* Barra de vida (autocierre notice) */
+.notice-timer{
+  position:absolute; left:0; right:0; bottom:0; height:4px; border-radius:0 0 16px 16px; overflow:hidden; background:#f2f2f7;
+}
+.notice-timer>i{
+  display:block; height:100%; width:100%; transform-origin:left; animation:notice-life linear forwards;
+  background:linear-gradient(90deg,#22c55e,#16a34a);
+}
+@keyframes notice-life{ from{transform:scaleX(1)} to{transform:scaleX(0)} }
+
+/* Evitar clic cuando host está oculto */
+.notice-host,.modal-host{ pointer-events:none }
+.notice-host.show,.modal-host.show{ pointer-events:auto }

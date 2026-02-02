@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Detalle de préstamo</title>
+  <link rel="stylesheet" href="HistorialPrestamos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img class="logo" src="../../assets/logo1.png" alt="Educación">
+      <div style="text-align:center">
+        <h1>DETALLE DEL PRÉSTAMO</h1>
+      </div>
+      <img class="logo" src="../../assets/escudo.png" alt="Escudo">
+    </header>
+
+    <section class="detalle">
+      <div id="detalleMeta" class="detalle-meta">
+        <!-- se llena desde JS -->
+      </div>
+
+      <div class="grid">
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Cantidad</th>
+            </tr>
+          </thead>
+          <tbody id="detalleTbody">
+            <tr><td colspan="2" class="empty">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Flecha flotante que regresa al historial -->
+    <a class="fab-home" href="HistorialPrestamos.html" title="Volver al historial">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+  </div>
+
+  <script src="../../src/DetallePrestamo.js" defer></script>
+</body>
+</html>

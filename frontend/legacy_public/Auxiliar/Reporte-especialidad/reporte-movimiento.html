@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Movimiento del material por carrera</title>
+
+  <!-- CSS propio (mismo look del resto) -->
+  <link rel="stylesheet" href="movimiento-report.css">
+</head>
+<body>
+  <div class="container">
+    <div class="content-card">
+      <!-- Header -->
+      <header class="header">
+        <img src="../../assets/logo1.png" alt="Logo TecNM" class="logo">
+        <div class="header-title-wrapper">
+          <h1 class="header-title">MOVIMIENTO DEL MATERIAL POR CARRERA</h1>
+          <div class="header-line"></div>
+        </div>
+        <img src="../../assets/escudo.png" alt="Logo Instituto" class="logo">
+      </header>
+
+      <!-- Filtros -->
+      <section class="filters">
+        <h2 class="filters-title">Filtros de búsqueda</h2>
+        <div class="filters-grid">
+          <div class="field">
+            <label for="filtroCarrera">Carrera</label>
+            <select id="filtroCarrera" class="input">
+              <option value="">Todas</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="filtroMaterial">Material</label>
+            <select id="filtroMaterial" class="input">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <!-- Fecha inicial -->
+          <div class="field">
+            <label for="filtroFechaInicial">Fecha inicial</label>
+            <input type="date" id="filtroFechaInicial" class="input">
+          </div>
+          <!-- Fecha final -->
+          <div class="field">
+            <label for="filtroFechaFinal">Fecha final</label>
+            <input type="date" id="filtroFechaFinal" class="input">
+          </div>
+        </div>
+        <div class="filters-actions">
+          <button class="btn-primary" id="btnAplicar">Aplicar filtros</button>
+          <button class="btn-secondary" id="btnLimpiar">Limpiar filtros</button>
+        </div>
+      </section>
+
+      <!-- Tabla -->
+      <section class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Carrera</th>
+              <th>Cantidad</th>
+              <th>Tipo de movimiento</th>
+              <th>Fecha</th>
+              <th>Usuario</th>
+            </tr>
+          </thead>
+          <tbody id="tablaMovimiento">
+            <!-- filas dinámicas -->
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Botones de descarga -->
+      <div class="actions">
+        <button class="btn-primary" id="btnExcel">Descargar Excel</button>
+        <button class="btn-primary" id="btnPDF">Descargar PDF</button>
+      </div>
+
+      <!-- Navegación (flecha) -->
+      <div class="nav-icons">
+        <a href="Reporte-especialidad.html" id="btnBack" class="nav-icon" title="Regresar" aria-label="Regresar">
+          <svg viewBox="0 0 24 24" class="svg-icon">
+            <path d="M14 7l-5 5 5 5M19 12H9"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificaciones -->
+  <script src="../../src/notify.js"></script>
+  <!-- Lógica de esta página -->
+  <script src="../../src/reporte-movimiento.js"></script>
+</body>
+</html>

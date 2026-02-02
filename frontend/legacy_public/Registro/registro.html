@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro | Laboratorio de Electrónica Analógica</title>
+
+  <link rel="stylesheet" href="registro.css?v=9">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <main class="shell">
+    <section class="card" role="region" aria-label="Registro de Alumno">
+
+      <header class="card-header">
+        <div class="logos">
+          <img class="logo" src="../assets/logo1.png" alt="TecNM">
+          <img class="logo center" src="../assets/Burrito.png" alt="Burrito">
+          <img class="logo" src="../assets/escudo.png" alt="ITS">
+        </div>
+
+        <h1>Registro de Alumno</h1>
+        <p class="sub">Laboratorio de Electrónica Analógica</p>
+      </header>
+
+      <form id="registroForm" class="form" autocomplete="on">
+        <label class="field">
+          <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+          <input
+            type="text"
+            id="numeroControl"
+            name="numeroControl"
+            placeholder="Número de Control (8 dígitos)"
+            inputmode="numeric"
+            maxlength="8"
+            autocomplete="username"
+            required
+          />
+        </label>
+        <small id="nc-help" class="hint"></small>
+
+        <label class="field">
+          <span class="icon"><i class="fa-solid fa-user"></i></span>
+          <input type="text" id="nombre" name="nombre" placeholder="Nombre" autocomplete="given-name" required>
+        </label>
+
+        <label class="field">
+          <span class="icon"><i class="fa-solid fa-user"></i></span>
+          <input type="text" id="apellidoPaterno" name="apellidoPaterno" placeholder="Apellido Paterno" autocomplete="family-name" required>
+        </label>
+
+        <label class="field">
+          <span class="icon"><i class="fa-solid fa-user"></i></span>
+          <input type="text" id="apellidoMaterno" name="apellidoMaterno" placeholder="Apellido Materno" required>
+        </label>
+
+        <!-- ✅ Select Carrera (con caret bonito) -->
+        <label class="field select-field">
+  <span class="icon"><i class="fa-solid fa-graduation-cap"></i></span>
+
+  <select id="carrera" name="carrera" required>
+    <option value="" selected disabled>Selecciona la Carrera</option>
+    <option value="11">Ingeniería Electrónica</option>
+    <option value="12">Ingeniería en Sistemas Computacionales</option>
+  </select>
+
+  <span class="caret">▾</span>
+</label>
+
+
+
+        <label class="field">
+          <span class="icon"><i class="fa-solid fa-lock"></i></span>
+          <input type="password" id="clave" name="clave" placeholder="Contraseña (máx 10)" maxlength="10" autocomplete="new-password" required>
+          <button type="button" class="eye" id="togglePwd1" aria-label="Mostrar u ocultar contraseña">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </label>
+
+        <label class="field">
+          <span class="icon"><i class="fa-solid fa-lock"></i></span>
+          <input type="password" id="confirmarClave" name="confirmarClave" placeholder="Confirmar contraseña" maxlength="10" autocomplete="new-password" required>
+          <button type="button" class="eye" id="togglePwd2" aria-label="Mostrar u ocultar contraseña confirmación">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </label>
+
+        <button type="submit" class="btn" id="btnRegistro">Registrarse</button>
+
+        <p class="register">
+          ¿Ya tienes una cuenta? <a href="../Login/index.html">Inicia sesión aquí</a>
+        </p>
+
+        <p class="footer">© TecNM Campus Saltillo</p>
+      </form>
+    </section>
+  </main>
+<!-- ✅ Shimeji -->
+  <div id="shimeji" class="shimeji" aria-label="Burrito guía">
+    <div class="shimeji-bubble" id="shimejiBubble">¡Bienvenido! 🫏 Si necesitas ayuda, haz clic en mí.</div>
+    <div class="shimeji-actions" id="shimejiActions">
+      <button type="button" class="sh-btn" id="shHelp">Ayuda</button>
+      <button type="button" class="sh-btn" id="shTips">Tip</button>
+      <button type="button" class="sh-btn primary" id="shNews">Anuncio</button>
+    </div>
+    <img id="shimejiImg" src="../assets/shimeji.png" alt="Burrito asistente">
+  </div>
+  <!-- ✅ shimeji global + modal (se inyecta si falta) -->
+
+<script src="../src/registro.js?v=9"></script>
+<script src="../src/shimeji.js?v=9"></script>
+</body>
+</html>

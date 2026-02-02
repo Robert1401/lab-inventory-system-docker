@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Usuarios</title>
+  <link rel="stylesheet" href="usuarios.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="page">
+    <main class="card">
+      <!-- Header -->
+      <header class="card-header" aria-label="Encabezado Usuarios">
+        <img class="logo" src="../../assets/logo1.png" alt="TecNM">
+        <div class="title-wrap">
+          <h1 class="title">Usuarios</h1>
+          <div class="title-rule" aria-hidden="true"></div>
+        </div>
+        <img class="logo" src="../../assets/escudo.png" alt="Instituto">
+      </header>
+
+      <!-- Formulario -->
+      <form id="formPersona" class="form" autocomplete="off">
+        <div class="grid grid-3cols">
+          <!-- Columna 1: Tipo -->
+          <div class="col">
+            <div class="field">
+              <label for="tipo">Tipo de registro:</label>
+              <select id="tipo" required>
+                <option value="" hidden>Seleccione…</option>
+                <option>Alumno</option>
+                <option>Auxiliar</option>
+                <option>Docente</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Columna 2: Datos comunes -->
+          <div class="col">
+            <div class="field">
+              <label for="control">Número de control:</label>
+              <input id="control" inputmode="numeric" maxlength="8" placeholder="Escribe …" required>
+              <small id="controlHelp" class="help">
+                Solo números (exactamente 8 para Alumno / 4 para Auxiliar y Docente)
+              </small>
+            </div>
+
+            <div class="field">
+              <label for="nombre">Nombre:</label>
+              <input id="nombre" placeholder="Escribe …" required>
+            </div>
+
+            <div class="field">
+              <label for="paterno">Apellido Paterno:</label>
+              <input id="paterno" placeholder="Escribe …" required>
+            </div>
+
+            <div class="field">
+              <label for="materno">Apellido Materno:</label>
+              <input id="materno" placeholder="Escribe …" required>
+            </div>
+          </div>
+
+          <!-- Columna 3: Carrera + Contraseña -->
+          <div class="col">
+            <div class="field field-carrera" id="fieldCarrera">
+  <label for="carrera">Carrera (solo Alumno):</label>
+  <select id="carrera" name="carrera" disabled>
+    <option value="" hidden>Seleccione…</option>
+    <!-- las opciones se llenan por JS -->
+  </select>
+  <div id="carreraHelp" class="help">Obligatorio solo para Alumno.</div>
+</div>
+
+            <!-- Contraseña -->
+            <div class="field">
+              <label for="pwd">Contraseña (10 dígitos máx.)</label>
+              <div class="pwd-wrap">
+                <input id="pwd" type="password" inputmode="numeric" maxlength="10" placeholder="Exactamente 10 dígitos" required>
+                <button type="button" id="togglePwd" class="eye" title="Mostrar/ocultar">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+              <small id="pwdHelp" class="help">
+                Máximo 10 caracteres. La fuerza máxima se alcanza en 10.
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="actions">
+          <button type="submit" id="btnGuardar" class="btn primary">
+            <span class="shine"></span><i class="fa-solid fa-floppy-disk"></i> Guardar
+          </button>
+          <button type="button" id="btnActualizar" class="btn primary" disabled>
+            <span class="shine"></span><i class="fa-solid fa-rotate"></i> Actualizar
+          </button>
+          <button type="button" id="btnEliminar" class="btn primary" disabled>
+            <span class="shine"></span><i class="fa-solid fa-trash"></i> Eliminar
+          </button>
+          <button type="button" id="btnCancelar" class="btn ghost">
+            <i class="fa-solid fa-xmark"></i> Cancelar
+          </button>
+        </div>
+      </form>
+
+      <!-- Tabla -->
+      <section aria-label="Listado de personas">
+        <div class="table-wrap scrollable">
+          <table id="tblPersonas">
+            <thead>
+              <tr>
+                <th style="width: 160px;">Número control</th>
+                <th>Nombre</th>
+                <th>Paterno</th>
+                <th>Materno</th>
+              </tr>
+            </thead>
+            <tbody><!-- se llena por JS --></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Casita ahora DENTRO del cuadro blanco -->
+      <div class="card-footer">
+        <a href="../auxiliar.html" class="fab-home" title="Inicio" aria-label="Inicio">
+          <svg viewBox="0 0 24 24" class="home-ico" width="26" height="26" aria-hidden="true">
+            <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z" fill="currentColor"/>
+          </svg>
+        </a>
+      </div>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <!-- Modal de confirmación bonito -->
+    <div id="confirmOverlay" class="confirm-overlay" hidden>
+      <div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="c-title">
+        <div class="confirm-icon">❓</div>
+        <h3 id="c-title" class="c-title">¿Confirmar acción?</h3>
+        <p id="c-text" class="c-text">Texto de confirmación</p>
+        <div class="confirm-actions">
+          <button type="button" id="c-cancel" class="btn ghost">Cancelar</button>
+          <button type="button" id="c-ok" class="btn danger">Sí, continuar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../src/usuarios.js"></script>
+</body>
+</html>

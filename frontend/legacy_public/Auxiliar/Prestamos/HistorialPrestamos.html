@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Historial de Préstamos</title>
+
+  <!-- CSS propio -->
+  <link rel="stylesheet" href="HistorialPrestamos.css" />
+
+  <!-- Iconos -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Encabezado -->
+    <header>
+      <img class="logo" src="../../assets/logo1.png" alt="Educación">
+      <div class="header-title">
+        <h1>HISTORIAL DE PRÉSTAMOS</h1>
+      </div>
+      <img class="logo" src="../../assets/escudo.png" alt="Escudo">
+    </header>
+
+    <!-- Panel principal -->
+    <section class="panel">
+
+      <!-- “Pestaña” (solo texto bonito) -->
+      <div class="tabs">
+        <button class="tab-btn active">
+          <i class="fa-solid fa-clipboard-list"></i>
+          Préstamos (general)
+        </button>
+      </div>
+
+      <!-- Filtros -->
+      <section class="filters">
+        <div class="f-group">
+          <label for="fFecha">Fecha (opcional):</label>
+          <input type="date" id="fFecha">
+        </div>
+
+        <div class="f-group">
+          <label for="fTipo">Estatus:</label>
+          <select id="fTipo">
+            <option value="todos">Todos</option>
+            <option value="en_curso">Solo en curso</option>
+            <option value="pendiente">Solo pendientes</option>
+            <option value="devuelto">Solo devueltos</option>
+          </select>
+        </div>
+
+        <div class="f-actions">
+          <button id="btnFiltrar" class="btn btn-ok">
+            <i class="fa-solid fa-magnifying-glass"></i> Filtrar
+          </button>
+          <button id="btnLimpiar" class="btn btn-no">
+            <i class="fa-solid fa-eraser"></i> Limpiar
+          </button>
+        </div>
+      </section>
+
+      <!-- Vista de PRESTAMOS -->
+      <div id="viewPrestamos" class="view active">
+        <p class="hint">
+          • Haz clic en <b>No. vale</b> para ver el detalle completo del préstamo.<br>
+          • Haz clic en el <b>estatus</b> <i>(En curso / Pendiente)</i> para ir a la pantalla de
+          préstamos y continuar el proceso. Si está <b>Devuelto</b>, ya no se mueve.
+        </p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>No. Vale</th>
+                <th>Fecha del préstamo</th>
+                <th>Estatus</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyPrestamos">
+              <tr>
+                <td colspan="3" class="empty">
+                  No hay préstamos registrados todavía.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="legend">
+          * Estatus posibles: <b>Pendiente</b> (solicitud sin aprobar),
+          <b>En curso</b> (material prestado, aún no devuelto) y <b>Devuelto</b>
+          (préstamo cerrado).
+        </p>
+      </div>
+    </section>
+
+    <!-- Flecha de regreso a Prestamos.html -->
+    <a class="fab-home" href="Prestamos.html" title="Regresar a préstamos">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+  </div>
+
+  <!-- Script -->
+  <script src="../../src/HistorialPrestamos.js" defer></script>
+</body>
+</html>

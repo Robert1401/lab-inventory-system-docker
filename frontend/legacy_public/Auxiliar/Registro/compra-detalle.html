@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalle de compra</title>
+  <link rel="stylesheet" href="compras.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <div class="frame">
+    <header class="app">
+      <img src="../../assets/logo1.png" alt="TecNM" class="logo"/>
+      <h1>Registro de compras general</h1>
+      <img src="../../assets/escudo.png" alt="Escudo" class="logo"/>
+    </header>
+
+    <div class="bar"></div>
+
+    <section class="ticket" id="ticket">
+      <!-- Encabezado detalle -->
+      <div class="head" id="headInfo">
+        <div class="title">N. Compra <span id="idCompra">—</span></div>
+        <div class="meta" id="metaFecha">Fecha ingreso: —</div>
+      </div>
+
+      <!-- Línea auxiliar -->
+      <div class="foot" style="border-top:none">
+        <span class="tag" id="auxInfo">Auxiliar: —</span>
+      </div>
+
+      <!-- Tabla de materiales -->
+      <div class="body">
+        <table>
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th style="width:160px;">Cantidad</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyDetalle">
+            <tr><td colspan="2" class="empty">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FABs fijos dentro del cuadro -->
+    <div class="nav" aria-label="Navegación flotante">
+      <button class="fab" id="navBack" title="Regresar" aria-label="Regresar">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <a class="fab" href="../auxiliar.html" title="Inicio" aria-label="Inicio">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </div>
+  </div>
+
+  <script src="../../src/compra_detalle.js"></script>
+</body>
+</html>

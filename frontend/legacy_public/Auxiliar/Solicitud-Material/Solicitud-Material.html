@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Solicitud Departamento de Ingeniería Eléctrica-Electrónica</title>
+
+  <!-- CSS propio -->
+  <link rel="stylesheet" href="Solicitud-Material.css">
+
+  <!-- Font Awesome (para la casita y la flecha) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-pVn8N9q2Jw6WlU8n7dO9X9h4a4C1g0z0o7f0GvA0o6o0E0y3a0n0j3c9cX9y0l2E7eC7n8pX9v4l7XG8K7ySsw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"
+  />
+</head>
+<body>
+  <main class="container">
+    <!-- ENCABEZADO: logos + título central -->
+    <div class="topbar">
+      <div class="logos-left">
+        <img src="../../assets/Tec.png" alt="TecNM" class="logo">
+      </div>
+
+      <div class="top-title">
+        <h2>SOLICITUD DEPARTAMENTO DE</h2>
+        <h3>INGENIERÍA ELÉCTRICA-ELECTRÓNICA</h3>
+      </div>
+
+      <div class="logos-right">
+        <!-- Mantengo tus rutas -->
+        <img src="../../assets/logo1.png" alt="TecNM" class="logo">
+        <img src="../../assets/escudo.png" alt="Escudo" class="logo">
+      </div>
+    </div>
+
+    <!-- PANEL GRIS -->
+    <section class="panel">
+      <!-- FILA: Fecha / Hora / Vale -->
+      <div class="row-inline">
+        <div class="fieldline">
+          <span class="label">Fecha:</span>
+          <div class="input-line"></div>
+        </div>
+        <div class="fieldline">
+          <span class="label">Hora:</span>
+          <div class="input-line"></div>
+        </div>
+        <div class="fieldline">
+          <span class="label">No. vale:</span>
+          <div class="input-line"></div>
+        </div>
+      </div>
+
+      <!-- CUERPO: Izquierda tabla / Derecha formulario -->
+      <div class="grid-two">
+        <!-- LADO IZQUIERDO -->
+        <div>
+          <div class="section-title">Laboratorio de electrónica analógica</div>
+          <div class="table-wrap">
+            <table class="table" id="tabla-materiales">
+              <colgroup>
+                <col style="width:38%">
+                <col style="width:22%">
+                <col style="width:40%">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>Material</th>
+                  <th>Cantidad</th>
+                  <th>Descripción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                </tr>
+                <tr>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                </tr>
+                <tr>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- LADO DERECHO -->
+        <div class="form-col">
+          <label for="materia">Materia:</label>
+          <input id="materia" type="text" />
+
+          <label for="maestro">Maestro:</label>
+          <input id="maestro" type="text" />
+
+          <label for="mesa">Mesa:</label>
+          <input id="mesa" class="input-short" type="text" />
+
+          <label for="control">N. Control de quien lo pidió</label>
+          <input id="control" type="text" />
+        </div>
+      </div>
+    </section>
+
+    <!-- PIE: botones + iconos (flecha y casita con Font Awesome) -->
+    <footer class="footer-bar">
+      <div class="btns">
+        <button class="btn" id="aprobar">Aprobar</button>
+        <button class="btn" id="rechazar">Rechazar</button>
+      </div>
+
+      <div class="iconos">
+        <!-- Rutas que pediste -->
+        <a href="../auxiliar.html" class="icono" title="Regresar">
+          <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <a href="../../Login/index.html" class="icono" title="Inicio">
+          <i class="fa-solid fa-house"></i>
+        </a>
+      </div>
+    </footer>
+  </main>
+   <div class="iconos">
+         <a href="../auxiliar.html" class="icono"><i class="fa-solid fa-arrow-left"></i></a>
+        <a href="../../Login/index.html" class="icono"><i class="fa-solid fa-house"></i></a>
+      </div>
+    </footer>
+  </div>
+  <!-- JS propio -->
+  <script src="../../Solicitud-Material.js"></script>
+</body>
+</html>

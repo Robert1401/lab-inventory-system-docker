@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Laboratorio de Electrónica Analógica</title>
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+  <!-- Fondo -->
+  <div class="bg" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <main class="shell">
+    <section class="card" role="region" aria-label="Acceso al sistema">
+
+      <header class="card-header">
+        <div class="logos">
+          <img class="logo" src="../assets/logo1.png" alt="TecNM">
+          <img class="logo center" src="../assets/Burrito.png" alt="Burrito">
+          <img class="logo" src="../assets/escudo.png" alt="ITS">
+        </div>
+
+        <h1>Laboratorio de Electrónica<br>Analógica</h1>
+        <p class="sub">Acceso al sistema</p>
+      </header>
+
+      <form id="loginForm" class="form" autocomplete="on">
+        <label class="field">
+          <span class="icon"><i class="fa-solid fa-id-card"></i></span>
+          <input
+            id="nc"
+            name="numeroControl"
+            type="text"
+            inputmode="numeric"
+            autocomplete="username"
+            placeholder="Número de control"
+            required
+          >
+        </label>
+
+        <label class="field">
+          <span class="icon"><i class="fa-solid fa-lock"></i></span>
+          <input
+            id="pwd"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Contraseña"
+            required
+          >
+
+          <button type="button" class="eye" id="togglePwd" aria-label="Mostrar u ocultar contraseña">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </label>
+
+        <div class="links">
+          <a href="#" id="forgotLink">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <button class="btn" id="btnLogin" type="submit">Iniciar sesión</button>
+
+        <p class="register">
+          ¿Es tu primera vez? <a href="../Registro/registro.html">Regístrate aquí</a>
+        </p>
+
+        <p class="footer">© TecNM Campus Saltillo</p>
+      </form>
+    </section>
+  </main>
+
+  <!-- ✅ Modal de anuncio (centrado con blur y zoom) -->
+  <div id="announceOverlay" class="announce-overlay" aria-hidden="true">
+    <div class="announce-modal" role="dialog" aria-modal="true" aria-label="Anuncio">
+      <button class="announce-close" id="announceClose" aria-label="Cerrar anuncio">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="announce-badge" id="announceBadge">ANUNCIO</div>
+      <h3 class="announce-title" id="announceTitle">Título</h3>
+      <p class="announce-text" id="announceText">Mensaje</p>
+      <div class="announce-actions">
+        <button class="announce-btn" id="announceOk">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Shimeji -->
+  <div id="shimeji" class="shimeji" aria-label="Burrito guía">
+    <div class="shimeji-bubble" id="shimejiBubble">¡Bienvenido! 🫏 Si necesitas ayuda, haz clic en mí.</div>
+    <div class="shimeji-actions" id="shimejiActions">
+      <button type="button" class="sh-btn" id="shHelp">Ayuda</button>
+      <button type="button" class="sh-btn" id="shTips">Tip</button>
+      <button type="button" class="sh-btn primary" id="shNews">Anuncio</button>
+    </div>
+    <img id="shimejiImg" src="../assets/shimeji.png" alt="Burrito asistente">
+  </div>
+
+  <script src="../src/shimeji.js"></script>
+  <script src="../src/script.js"></script>
+</body>
+</html>

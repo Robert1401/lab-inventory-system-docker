@@ -1,0 +1,298 @@
+/* ===== Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===== Fondo + layout ===== */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(1200px 800px at 50% -10%, #7a0000 0%, #2b0000 70%, #210000 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  color: #3a0b0b;
+}
+.container {
+  width: 100%;
+  max-width: 1200px;
+}
+.content-card {
+  background: #fff;
+  border-radius: 22px;
+  padding: 32px 32px 28px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+.logo {
+  width: 86px;
+  height: 64px;
+  object-fit: contain;
+}
+.header-title-wrapper {
+  flex: 1;
+  text-align: center;
+}
+.header-title {
+  color: #7a0000;
+  font-weight: 900;
+  letter-spacing: .5px;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.header-line {
+  height: 4px;
+  width: 100%;
+  background: #7a0000;
+  border-radius: 4px;
+}
+
+/* ===== Filtros ===== */
+.filters {
+  background: #fff7f7;
+  border: 1px solid #f4d2d2;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.filters-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #7a0000;
+  margin-bottom: 12px;
+}
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #570000;
+}
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e7c9c9;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+  color: #3a0b0b;
+  background: #fff;
+}
+.input:focus {
+  border-color: #b30000;
+  box-shadow: 0 0 0 2px rgba(179, 0, 0, 0.12);
+}
+.filters-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+.btn-secondary {
+  border: 1px solid #e7c9c9;
+  border-radius: 12px;
+  padding: 10px 18px;
+  background: #fff;
+  color: #7a0000;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== Tabla ===== */
+.table-wrap {
+  margin-top: 6px;
+  margin-bottom: 20px;
+  overflow: visible;
+}
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fffafc;
+  box-shadow: 0 3px 10px rgba(120, 0, 0, 0.1);
+}
+.table thead th {
+  background: linear-gradient(135deg, #b30000 0%, #7a0000 100%);
+  color: #fff;
+  padding: 14px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 15px;
+}
+.table tbody td {
+  padding: 12px;
+  text-align: center;
+  color: #5a0000;
+  border-bottom: 1px solid #f3d5d5;
+}
+.table tbody tr:hover td {
+  background: #fff0f0;
+}
+.hint {
+  font-size: 12px;
+  color: #7a0000;
+  margin-top: 8px;
+  opacity: 0.85;
+}
+
+/* ===== Botones ===== */
+.actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin: 14px 0 8px;
+  flex-wrap: wrap;
+}
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  min-width: 180px;
+  padding: 12px 24px;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #b30000 0%, #7a0000 100%);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  top: -120%;
+  left: -30%;
+  width: 60%;
+  height: 340%;
+  transform: rotate(25deg);
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.35) 45%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0;
+  transition: opacity .25s ease, transform .6s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.045);
+  background: linear-gradient(135deg, #d00000 0%, #8b0000 100%);
+  box-shadow: 0 14px 28px rgba(122, 0, 0, 0.45), 0 0 18px rgba(255, 0, 0, 0.28);
+}
+.btn-primary:hover::after {
+  opacity: 0.9;
+  transform: rotate(25deg) translateX(220px);
+}
+
+/* ===== Iconos (flecha) ===== */
+.nav-icons {
+  display: flex;
+  gap: 18px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.nav-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  color: #7a0000;
+  text-decoration: none;
+  border-radius: 50%;
+  transition: transform .18s ease, color .18s ease, filter .18s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.svg-icon {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+.nav-icon:hover {
+  color: #e00000;
+  transform: translateY(-2px) scale(1.1);
+  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.35));
+}
+
+/* ===== Scroll nice para contenedor generado en JS ===== */
+#inventarioScrollWrap {
+  max-height: 420px;
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 6px rgba(15,23,42,.08);
+  background: #ffffff;
+}
+#inventarioScrollWrap::-webkit-scrollbar {
+  width: 8px;
+}
+#inventarioScrollWrap::-webkit-scrollbar-track {
+  background: #f9fafb;
+  border-radius: 999px;
+}
+#inventarioScrollWrap::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+#inventarioScrollWrap::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+#inventarioScrollWrap {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f9fafb;
+}
+
+/* ===== Print (PDF) ===== */
+@media print {
+  body {
+    background: #fff;
+    padding: 0;
+  }
+  .content-card {
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .nav-icons,
+  .actions,
+  .filters {
+    display: none !important;
+  }
+  .header-line {
+    background: #000;
+  }
+}
+
+/* Estado gris para botones deshabilitados */
+.btn-primary:disabled,
+button:disabled {
+  opacity: 0.45;
+  filter: grayscale(0.3);
+  cursor: not-allowed !important;
+}

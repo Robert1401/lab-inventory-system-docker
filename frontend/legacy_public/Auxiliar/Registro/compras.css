@@ -1,0 +1,148 @@
+:root{
+  --rojo-1:#b30000;
+  --rojo-2:#7a0000;      /* guinda */
+  --rojo-3:#8b0000;
+  --ink:#1f2937;
+  --muted:#6b7280;
+  --bg-white:#ffffff;
+  --card-soft:#fffafc;
+  --border:#e5e7eb;
+  --halo:rgba(0,0,0,.10);
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+
+body{
+  margin:0;
+  font-family:'Segoe UI', system-ui, Roboto, Arial, sans-serif;
+  color:var(--ink);
+  background: radial-gradient(circle at center, var(--rojo-3) 10%, #2b0000 80%);
+  display:flex; justify-content:center; align-items:flex-start;
+}
+
+/* ===== Tarjeta principal (cuadro blanco) ===== */
+.frame{
+  position: relative;                   /* <-- ancla los FAB dentro del cuadro */
+  width:85%; max-width:1000px; min-height:600px;
+  margin:32px auto; background:var(--bg-white);
+  border-radius:25px; box-shadow:0 0 35px rgba(0,0,0,.45);
+  padding:30px 40px; animation:fadeIn .7s ease-in-out; transition:.3s ease;
+}
+.frame:hover{ transform:scale(1.02); box-shadow:0 0 45px rgba(255,180,180,.6); }
+@keyframes fadeIn{ from{opacity:0;transform:translateY(25px);} to{opacity:1;transform:translateY(0);} }
+
+/* ===== Header ===== */
+header.app{
+  display:grid; grid-template-columns:120px 1fr 120px; align-items:center; gap:10px;
+  padding-bottom:10px;
+}
+header.app h1{
+  margin:0; text-align:center; color:var(--rojo-2); font-size:28px; font-weight:900; letter-spacing:.3px;
+}
+header.app img.logo{ height:60px; object-fit:contain; }
+.bar{ height:4px; background:var(--rojo-2); border-radius:4px; margin:12px 0 18px; }
+
+/* ===== Ticket / tarjeta interna ===== */
+.ticket{
+  background:#fff;
+  border-radius:18px; border:1px solid var(--border);
+  box-shadow:0 18px 42px var(--halo);
+  overflow:hidden;
+}
+
+/* ===== Buscador por fecha ===== */
+.search{
+  width:100%; display:flex; justify-content:flex-end; padding:12px 12px 0;
+}
+.search .box{ position:relative; width:min(420px,100%); }
+.search input{
+  width:100%; height:44px; border-radius:22px; border:2px solid #e7dede;
+  padding:0 48px 0 48px; outline:none; background:#fffdfd;
+  transition:border .15s, box-shadow .15s; font-size:14.5px;
+}
+.search input::placeholder{ color:#a7a7a7; }
+.search input:focus{
+  border-color:var(--rojo-1);
+  box-shadow:0 0 0 4px rgba(179,0,0,.12);
+}
+.search .ico{
+  position:absolute; left:12px; top:50%; transform:translateY(-50%);
+  color:#7a0000; font-size:16px; pointer-events:none;
+}
+.search .btn{
+  position:absolute; right:6px; top:50%; transform:translateY(-50%);
+  border:0; background:linear-gradient(90deg,var(--rojo-1),var(--rojo-2)); color:#fff;
+  height:32px; padding:0 14px; border-radius:999px; cursor:pointer; font-weight:700;
+}
+
+/* ===== Dropdown de sugerencias del buscador ===== */
+.search .suggest{
+  position:absolute; left:0; top:calc(100% + 6px); width:100%;
+  background:#fff; border:1px solid var(--border); border-radius:12px;
+  box-shadow:0 14px 30px var(--halo); z-index:20; max-height:220px; overflow:auto;
+}
+.search .suggest button{
+  width:100%; text-align:left; background:#fff; border:0; padding:10px 14px;
+  font-size:14px; cursor:pointer;
+}
+.search .suggest button:hover{ background:#fff7f7; }
+.search .suggest .empty{ padding:10px 14px; color:#9ca3af; }
+
+/* ===== Encabezado del ticket ===== */
+.ticket .head{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 16px 6px; background:#fafafa; border-bottom:1px solid var(--border);
+}
+.ticket .title{ font-weight:900; color:#3b0b0b; font-size:20px; }
+.ticket .meta{ color:#7a0000; font-weight:700; }
+
+/* ===== Tabla ===== */
+table{ width:100%; border-collapse:separate; border-spacing:0; background:var(--card-soft); }
+thead th{
+  background:linear-gradient(180deg,var(--rojo-1), #8b0000);
+  color:#fff; text-align:left; font-weight:800; padding:12px 14px;
+}
+tbody td{
+  padding:12px 14px; border-top:1px solid var(--border);
+  color:#5a0000; background:#fffdfd;
+}
+tbody tr:nth-child(even) td{ background:#fff7f7; }
+.empty{ padding:26px; text-align:center; color:var(--muted); }
+
+/* ===== Pie del ticket ===== */
+.ticket .foot{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:12px 16px; background:#fafafa; border-top:1px solid var(--border);
+}
+.tag{
+  font-size:12px; padding:6px 10px; border-radius:999px;
+  background:#f3f4f6; color:#111827; border:1px dashed #d1d5db;
+}
+
+/* ===== NAV FLOTANTE (flecha y casa dentro del cuadro) ===== */
+.nav{
+  position:absolute;            /* anclado a .frame (que es relative) */
+  bottom:25px; right:35px;
+  display:flex; align-items:center; justify-content:flex-end; gap:22px; z-index:10;
+}
+.fab{
+  background:transparent; border:none; color:var(--rojo-2);
+  font-size:1.9rem; cursor:pointer; transition:color .25s ease, transform .25s ease; outline:none;
+}
+.fab i{ display:block; line-height:1; }
+.fab:hover{ color:#d00000; transform:translateY(-2px); }
+.fab:active{ transform:scale(.95); }
+
+/* ===== Responsive / print ===== */
+@media (max-width:900px){
+  .frame{ width:92%; padding:22px; }
+  header.app{ grid-template-columns:90px 1fr 90px; }
+  header.app h1{ font-size:22px; }
+}
+@media print{
+  body{ background:#fff; }
+  .nav, .bar, .search { display:none !important; }
+  .frame{ width:auto; max-width:none; margin:0; padding:0; box-shadow:none; border-radius:0; }
+  .ticket{ box-shadow:none; border:1px solid #ddd; }
+}

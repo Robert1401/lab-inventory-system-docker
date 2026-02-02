@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Departamento de Ingeniería Eléctrica–Electrónica</title>
+
+  <link rel="stylesheet" href="alumnos-inicial.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="frame">
+    <section aria-label="Inicio">
+      <!-- =================== HEADER =================== -->
+      <header>
+        <div class="logos">
+          <img class="logo" src="../assets/logo1.png" alt="Secretaría de Educación">
+        </div>
+        <h1>
+          BIENVENIDO AL DEPARTAMENTO DE<br>
+          INGENIERÍA ELÉCTRICA–ELECTRÓNICA
+        </h1>
+        <div class="logos" style="justify-content:flex-end">
+          <img class="logo" src="../assets/escudo.png" alt="TecNM">
+        </div>
+      </header>
+
+      <div class="spacer"></div>
+
+      <!-- =================== TARJETAS PRINCIPALES =================== -->
+      <div class="grid3">
+        <!-- Solicitud de Materiales -->
+        <a class="card card--link" href="../Alumnos/Solicitud de Material/solicitud-materiales.html">
+          <i class="fa-solid fa-clipboard-list" aria-hidden="true"></i>
+          <h3>Solicitud<br>de Materiales</h3>
+          <p>Solicita los materiales que necesitas para tus prácticas.</p>
+        </a>
+
+        <!-- Devolución -->
+        <a class="card card--link" href="../Alumnos/Devolucion de Materiales/devolucion.html">
+          <i class="fa-solid fa-clipboard-check" aria-hidden="true"></i>
+          <h3>Devolución de<br>Materiales</h3>
+          <p>Devuelve los materiales prestados al laboratorio.</p>
+        </a>
+
+        <!-- Asesorías -->
+        <a class="card card--link" href="../Alumnos/Asesorias/asesorias-alumno.html">
+          <i class="fa-solid fa-user-graduate" aria-hidden="true"></i>
+          <h3>Solicitud<br>de Asesorías</h3>
+          <p>Pide una asesoría para resolver dudas de tus prácticas.</p>
+        </a>
+      </div>
+
+      <!-- =================== AVISOS / MODALES =================== -->
+      <div id="noticeHost" class="notice-host" aria-live="polite" aria-atomic="true"></div>
+      <div id="modalHost" class="modal-host" role="dialog" aria-modal="true"></div>
+
+      <!-- =================== NAVEGACIÓN INFERIOR =================== -->
+      <div class="footer-nav">
+        <a href="../Login/index.html" class="nav-icon home" title="Volver al inicio de sesión">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22" fill="white"></polyline>
+          </svg>
+        </a>
+      </div>
+    </section>
+  </div>
+<script defer src="../src/alumnos-inicial.js"></script>
+
+  <!-- =================== AVISO CENTRADO / CONFIRM =================== -->
+  <div id="noticeHost" class="notice-host" aria-live="polite" aria-atomic="true"></div>
+  <div id="modalHost" class="modal-host" role="dialog" aria-modal="true"></div>
+</body>
+</html>
