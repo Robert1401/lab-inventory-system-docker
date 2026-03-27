@@ -11,12 +11,12 @@ variables:
 build-job:
   stage: build
   script:
-    - echo "=== ETAPA BUILD ==="
-    - echo "Aplicacion: $APP_NAME"
-    - echo "Usuario: $USER_NAME"
-    - echo "Rama actual: $BRANCH_NAME"
-    - echo "Simulando construccion de imagen Docker"
-    - echo "docker build -t laboratorio-app ."
+    - 'echo "=== ETAPA BUILD ==="'
+    - 'echo "Aplicacion: $APP_NAME"'
+    - 'echo "Usuario: $USER_NAME"'
+    - 'echo "Rama actual: $BRANCH_NAME"'
+    - 'echo "Simulando construccion de imagen Docker"'
+    - 'docker build -t laboratorio-app .'
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_COMMIT_BRANCH == "prueba-ci"'
@@ -24,10 +24,10 @@ build-job:
 test-job:
   stage: test
   script:
-    - echo "=== ETAPA TEST ==="
-    - echo "Simulando pruebas del proyecto"
-    - sleep 5
-    - echo "Pruebas completadas correctamente"
+    - 'echo "=== ETAPA TEST ==="'
+    - 'echo "Simulando pruebas del proyecto"'
+    - 'sleep 5'
+    - 'echo "Pruebas completadas correctamente"'
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_COMMIT_BRANCH == "prueba-ci"'
@@ -35,10 +35,10 @@ test-job:
 deploy-job:
   stage: deploy
   script:
-    - echo "=== ETAPA DEPLOY ==="
-    - echo "Simulando despliegue local con Docker Compose"
-    - echo "docker compose up --build -d"
-    - echo "Despliegue completado"
+    - 'echo "=== ETAPA DEPLOY ==="'
+    - 'echo "Simulando despliegue local con Docker Compose"'
+    - 'echo "docker compose up --build -d"'
+    - 'echo "Despliegue completado"'
   environment:
     name: production
   rules:
