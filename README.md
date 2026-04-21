@@ -105,7 +105,11 @@ docker-compose.yml
 
 ## 📸 System Preview
 
-*(Add screenshots here to improve presentation)*
+<img width="1357" height="633" alt="Screenshot_1624" src="https://github.com/user-attachments/assets/5549bdc2-c585-473d-8273-318e23e7fc6e" />
+<img width="1357" height="633" alt="Screenshot_1625" src="https://github.com/user-attachments/assets/41d27d5e-bab0-4e42-964b-41d271cd1c24" />
+<img width="1357" height="633" alt="Screenshot_1626" src="https://github.com/user-attachments/assets/f36749cd-6c90-4993-a644-c0cb6f9ac27f" />
+<img width="1357" height="633" alt="Screenshot_1627" src="https://github.com/user-attachments/assets/97beaac9-94d4-4c01-9b40-16a07f0ecf5f" />
+
 
 ---
 
