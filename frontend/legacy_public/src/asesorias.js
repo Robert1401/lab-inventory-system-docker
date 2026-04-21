@@ -1,835 +1,937 @@
 /* =========================================================
-   Gestión de Asesorías (Docentes + Materias + Horario limitado)
+   Gestión de Asesorías
+   Frontend completo y adaptado al backend actual
 ========================================================= */
 (() => {
   "use strict";
 
-  // ---------- Config ----------
-  const API = "/backend/asesorias.php";
-  const MATERIAS_API = "/backend/materias.php";
-  const PERSONAS_API = "http://localhost:8000/backend/personas_api.php";
+  const API_ASESORIAS = "/api/asesorias";
+  const API_MATERIAS = "/api/materias";
+  const API_PERSONAS = "/api/personas";
 
   const $ = (id) => document.getElementById(id);
-  const qs = (s) => document.querySelector(s);
-  const esc = (s = "") =>
-    String(s).replace(/[&<>"']/g, (m) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[
-        m
-      ])
-    );
+  const qs = (selector) => document.querySelector(selector);
 
-  // ---------- Utilidades ----------
-  const todayISO = () => {
+  let ASESORIAS_CACHE = [];
+  let DOCENTES_CACHE = [];
+  let MATERIAS_CACHE = [];
+  let ALUMNOS_CACHE = [];
+
+  const DOCENTE_MAP = new Map();
+  const ALUMNO_MAP = new Map();
+
+  function getLoggedUser() {
+    try {
+      return JSON.parse(localStorage.getItem("LE_user") || "null");
+    } catch {
+      return null;
+    }
+  }
+
+  function esc(value = "") {
+    return String(value).replace(/[&<>"']/g, (m) => {
+      const map = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      };
+      return map[m];
+    });
+  }
+
+  function todayISO() {
     const d = new Date();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const dd = String(d.getDate()).padStart(2, "0");
     return `${d.getFullYear()}-${mm}-${dd}`;
-  };
+  }
 
-  const parseHHMM = (s) => {
-    const m = /^\s*(\d{1,2}):(\d{2})\s*$/.exec(s || "");
-    if (!m) return null;
-    const h = +m[1],
-      mi = +m[2];
-    if (h > 23 || mi > 59) return null;
-    return h * 60 + mi;
-  };
+  function toTitleCase(text = "") {
+    return String(text)
+      .toLowerCase()
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  }
 
-  const parseRangoTxt = (txt) => {
-    const p = (txt || "").split("-");
-    if (p.length !== 2) return null;
-    const a = parseHHMM(p[0]);
-    const b = parseHHMM(p[1]);
-    if (a == null || b == null || b <= a) return null;
-    return { ini: a, fin: b };
-  };
+  function parseHHMM(text = "") {
+    const match = /^\s*(\d{1,2}):(\d{2})\s*$/.exec(String(text));
+    if (!match) return null;
 
-  const MAX_MIN = 16 * 60; // 16:00 como máximo (fin)
+    const hh = Number(match[1]);
+    const mm = Number(match[2]);
 
-  const statusFrom = (fecha, hora) => {
+    if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
+    return hh * 60 + mm;
+  }
+
+  function parseRange(text = "") {
+    const parts = String(text).split("-");
+    if (parts.length !== 2) return null;
+
+    const ini = parseHHMM(parts[0]);
+    const fin = parseHHMM(parts[1]);
+
+    if (ini == null || fin == null || fin <= ini) return null;
+    return { ini, fin };
+  }
+
+  function formatRange(ini, fin) {
+    return `${ini} - ${fin}`;
+  }
+
+  const MAX_END_MINUTES = 16 * 60;
+
+  function getStatusFromDate(fecha, hora) {
     const hoy = todayISO();
+
+    if (!fecha) return "Pendiente";
     if (fecha < hoy) return "Finalizada";
     if (fecha > hoy) return "Pendiente";
-    const r = parseRangoTxt(hora);
-    if (!r) return "Pendiente";
-    const now = new Date();
-    const m = now.getHours() * 60 + now.getMinutes();
-    if (m < r.ini) return "Pendiente";
-    if (m > r.fin) return "Finalizada";
-    return "En curso";
-  };
 
-  // ---------- Mini toasts ----------
-  function toast(msg, type = "info", ms = 1800) {
-    let host = $("nv-mini");
+    const range = parseRange(hora || "");
+    if (!range) return "Pendiente";
+
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    if (currentMinutes < range.ini) return "Pendiente";
+    if (currentMinutes > range.fin) return "Finalizada";
+    return "En curso";
+  }
+
+  function normalizeApiArray(json) {
+    if (Array.isArray(json)) return json;
+    if (Array.isArray(json?.data)) return json.data;
+    if (Array.isArray(json?.asesorias)) return json.asesorias;
+    return [];
+  }
+
+  function toast(message, type = "info", duration = 2200) {
+    let host = $("asesorias-toast-host");
+
     if (!host) {
       host = document.createElement("div");
-      host.id = "nv-mini";
-      host.style.cssText =
-        "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);" +
-        "z-index:99999;display:flex;flex-direction:column;gap:10px;" +
-        "align-items:center;pointer-events:none";
+      host.id = "asesorias-toast-host";
+      host.style.cssText = `
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%);
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        pointer-events: none;
+      `;
       document.body.appendChild(host);
     }
+
     const card = document.createElement("div");
-    card.style.cssText =
-      "pointer-events:auto;max-width:520px;color:#fff;border-radius:12px;" +
-      "padding:10px 14px;font-weight:700;box-shadow:0 10px 26px rgba(0,0,0,.35)";
-    card.style.background =
-      type === "success"
-        ? "#065f46"
-        : type === "error"
-        ? "#991b1b"
-        : type === "warn"
-        ? "#92400e"
-        : "#1f2937";
-    card.textContent = msg;
+    card.style.cssText = `
+      pointer-events: auto;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0,0,0,.30);
+      max-width: 520px;
+      text-align: center;
+    `;
+
+    if (type === "success") card.style.background = "#065f46";
+    else if (type === "error") card.style.background = "#991b1b";
+    else if (type === "warn") card.style.background = "#92400e";
+    else card.style.background = "#7a0000";
+
+    card.textContent = message;
     host.appendChild(card);
-    setTimeout(() => card.remove(), ms);
+
+    setTimeout(() => {
+      card.remove();
+    }, duration);
   }
 
-  // ---------- Fetch helper ----------
-  async function jfetch(url, options = {}) {
+  function askConfirm(message) {
+    return Promise.resolve(window.confirm(message));
+  }
+
+  async function fetchJSON(url, options = {}) {
     const res = await fetch(url, {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       ...options,
     });
-    let data = null;
+
+    let json = null;
     try {
-      data = await res.json();
+      json = await res.json();
     } catch {
-      /* ignore */
+      json = null;
     }
-    if (!res.ok || !data || data.ok === false)
-      throw new Error((data && data.error) || `HTTP ${res.status}`);
-    // si viene {ok:true,data:[...]} regresamos .data
-    return data.data != null ? data.data : data;
-  }
 
-  // ========================================================
-  //   PERSONAS (DOCENTES + ALUMNOS)
-  // ========================================================
-  let PROFESORES = [];
-  let PROF_MAP = {}; // id_Profesor -> nombreCompleto
-  let ALUMNOS = [];
-  let ALUM_MAP = {}; // no_control -> nombreCompleto
-
-  async function apiProfesores() {
-    try {
-      const res = await fetch(`${PERSONAS_API}?action=list`);
-      const data = await res.json();
-      const personas = (data && data.data) ? data.data : [];
-
-      const docentes = [];
-      const alumnos = [];
-
-      personas.forEach((p, idx) => {
-        const tipo = String(p.tipo || "").toLowerCase();
-        const id = String(
-          p.numeroControl || p.no_control || p.noControl || idx + 1
-        );
-        const nombreCompleto = [p.nombre, p.apellidoPaterno, p.apellidoMaterno]
-          .filter(Boolean)
-          .join(" ")
-          .trim();
-
-        if (tipo === "docente") {
-          docentes.push({ id_Profesor: id, nombreCompleto });
-          if (id) PROF_MAP[id] = nombreCompleto;
-        } else if (tipo === "alumno" || tipo === "estudiante") {
-          alumnos.push({ no_control: id, nombreCompleto });
-          if (id) ALUM_MAP[id] = nombreCompleto;
-        }
-      });
-
-      docentes.sort((a, b) =>
-        String(a.nombreCompleto).localeCompare(String(b.nombreCompleto), "es", {
-          sensitivity: "base",
-        })
-      );
-
-      ALUMNOS = alumnos;
-
-      return docentes;
-    } catch (e) {
-      console.error("Error cargando personas desde PERSONAS_API", e);
-      return [];
+    if (!res.ok) {
+      const msg =
+        json?.message ||
+        json?.error ||
+        json?.mensaje ||
+        `HTTP ${res.status}`;
+      throw new Error(msg);
     }
+
+    if (json && json.ok === false) {
+      throw new Error(json.message || json.error || "Error del servidor");
+    }
+
+    if (json && json.success === false) {
+      throw new Error(json.message || json.error || "Error del servidor");
+    }
+
+    return json;
   }
 
-  async function loadProfesores() {
-    PROFESORES = await apiProfesores();
-    // PROF_MAP y ALUM_MAP ya se cargan dentro de apiProfesores()
-  }
+  async function apiPersonas() {
+    const json = await fetchJSON(API_PERSONAS);
+    const rows = normalizeApiArray(json);
 
-  // ========================================================
-  //   API ASESORÍAS
-  // ========================================================
+    DOCENTE_MAP.clear();
+    ALUMNO_MAP.clear();
 
-  async function apiList() {
-    const arr = await jfetch(API);
-    return (arr || []).map((x) => {
-      const id_profe = String(x.id_profesor || x.id_Profesor || "");
-      const backendName = x.docenteNombre || x.docente || "";
-      const docenteNombre = backendName || PROF_MAP[id_profe] || "";
+    const docentes = [];
+    const alumnos = [];
 
-      const auxiliarNombre =
-        x.auxiliarNombre || x.auxiliar || docenteNombre || "";
+    rows.forEach((p, index) => {
+      const tipo = String(p.tipo || "").trim().toLowerCase();
+      const numeroControl = String(
+        p.numeroControl ?? p.no_control ?? p.noControl ?? ""
+      ).trim();
 
-      return {
-        id: String(x.id),
-        titulo: x.titulo,
-        id_profesor: id_profe,
-        docenteNombre,
-        auxiliarNombre,
-        descripcion: x.descripcion || "",
-        fecha: x.fecha,
-        hora: x.hora,
-        cupoTotal: Number(x.cupo_total ?? x.cupoTotal ?? x.cupo ?? 0),
-        cupoActual: Number(x.cupo_actual ?? x.cupoActual ?? 0),
-        status: statusFrom(x.fecha, x.hora),
-      };
+      const nombreCompleto = [
+        p.nombre,
+        p.apellidoPaterno,
+        p.apellidoMaterno,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      if (!nombreCompleto) return;
+
+      if (tipo === "docente") {
+        const item = {
+          id: numeroControl || String(index + 1),
+          nombreCompleto,
+        };
+        docentes.push(item);
+        DOCENTE_MAP.set(String(item.id), item.nombreCompleto);
+      }
+
+      if (tipo === "alumno") {
+        const item = {
+          numeroControl,
+          nombreCompleto,
+        };
+        alumnos.push(item);
+        ALUMNO_MAP.set(String(numeroControl), nombreCompleto);
+      }
     });
+
+    docentes.sort((a, b) =>
+      a.nombreCompleto.localeCompare(b.nombreCompleto, "es", {
+        sensitivity: "base",
+      })
+    );
+
+    alumnos.sort((a, b) =>
+      a.nombreCompleto.localeCompare(b.nombreCompleto, "es", {
+        sensitivity: "base",
+      })
+    );
+
+    DOCENTES_CACHE = docentes;
+    ALUMNOS_CACHE = alumnos;
   }
 
-  async function apiCreate(p) {
-    await jfetch(API, { method: "POST", body: JSON.stringify(p) });
-  }
-  async function apiUpdate(p) {
-    await jfetch(API, { method: "PUT", body: JSON.stringify(p) });
-  }
-  async function apiDelete(id) {
-    await jfetch(`${API}?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-  }
-
-  // ---------- API Materias ----------
   async function apiMaterias() {
-    const res = await fetch(MATERIAS_API, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    const data = await res.json();
-    if (!Array.isArray(data)) return [];
+    const json = await fetchJSON(API_MATERIAS);
+    const rows = normalizeApiArray(json);
 
-    return data
+    const materias = rows
       .filter((m) => m.id_Estado == null || Number(m.id_Estado) === 1)
       .map((m) => ({
         id: Number(m.id_Materia ?? m.id ?? 0),
-        nombre: String(m.materia ?? m.nombre ?? "").trim(),
+        nombre: String(m.nombre ?? m.materia ?? "").trim(),
       }))
-      .filter((m) => m.nombre.length);
+      .filter((m) => m.nombre.length > 0)
+      .sort((a, b) =>
+        a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
+      );
+
+    MATERIAS_CACHE = materias;
   }
 
-  // ========================================================
-  //   Render listado
-  // ========================================================
+  async function apiListAsesorias() {
+    const json = await fetchJSON(API_ASESORIAS);
+    const rows = normalizeApiArray(json);
 
-  async function render() {
-    try {
-      const list = await apiList();
-      renderList(list);
-    } catch (e) {
-      console.error(e);
-      renderList([]);
-      toast("No se pudo cargar la lista.", "error");
-    }
-  }
+    ASESORIAS_CACHE = rows.map((x) => {
+      const id = String(
+        x.id ??
+        x.id_Asesoria ??
+        x.id_asesoria ??
+        ""
+      ).trim();
 
-  function renderList(list) {
-    const cont = $("asesoriasContainer");
-    if (!cont) return;
+      const titulo = String(
+        x.materia ??
+        x.nombre ??
+        x.titulo ??
+        ""
+      ).trim();
 
-    if (!list.length) {
-      cont.innerHTML = `
-        <div class="empty-wrap">
-          <div class="empty-icon" aria-hidden="true">📚</div>
-          <div class="empty-title">No hay asesorías</div>
-          <div class="empty-sub">Crea una nueva asesoría con el botón de arriba.</div>
-        </div>`;
-      return;
-    }
+      const idProfesor = String(
+        x.id_profesor ??
+        x.id_Profesor ??
+        ""
+      ).trim();
 
-    const ordered = [...list].sort((a, b) => {
-      const score = (s) =>
-        s.status === "En curso" ? 0 : s.status === "Pendiente" ? 1 : 2;
-      const ra = score(a),
-        rb = score(b);
-      if (ra !== rb) return ra - rb;
-      if (a.fecha !== b.fecha) return a.fecha.localeCompare(b.fecha);
-      return a.titulo.localeCompare(b.titulo);
+      const docenteNombre =
+        x.docenteNombre ||
+        x.docente_nombre ||
+        x.docente ||
+        DOCENTE_MAP.get(idProfesor) ||
+        "";
+
+      const horaBase = String(
+        x.hora ??
+        x.hora_inicio ??
+        ""
+      ).trim();
+
+      return {
+        id,
+        titulo,
+        id_profesor: idProfesor,
+        docenteNombre: docenteNombre || "",
+        descripcion: String(x.descripcion ?? "").trim(),
+        fecha: String(x.fecha ?? "").trim(),
+        hora: horaBase,
+        cupoTotal: Number(x.cupo_total ?? x.cupoTotal ?? x.cupo ?? 0),
+        cupoActual: Number(x.cupo_actual ?? x.cupoActual ?? x.inscritos ?? 0),
+        alumnos: Array.isArray(x.alumnos) ? x.alumnos : [],
+        status:
+          x.status ||
+          x.estado ||
+          getStatusFromDate(
+            String(x.fecha ?? "").trim(),
+            horaBase
+          ),
+      };
     });
 
-    cont.innerHTML = ordered
-      .map((s) => {
-        const badge =
-          s.status === "En curso"
-            ? "status-en-curso"
-            : s.status === "Pendiente"
-            ? "status-pendiente"
-            : "status-finalizada";
-        return `
-        <div class="asesoria-card" data-id="${s.id}">
-          <h2 class="card-title">${esc(s.titulo)}</h2>
-          <div class="card-info">
-            <p class="info-item">
-              <span class="icon">👨‍🏫</span>
-              <strong>Docente:</strong> ${esc(s.docenteNombre || "—")}
-            </p>
-            <p class="info-item">
-              <span class="icon">📝</span>
-              <strong>Descripción:</strong> ${esc(s.descripcion)}
-            </p>
-            <p class="info-item">
-              <span class="icon">📅</span>
-              <strong>Fecha:</strong> ${esc(s.fecha)}
-            </p>
-            <p class="info-item">
-              <span class="icon">🕐</span>
-              <strong>Hora:</strong> ${esc(s.hora)}
-            </p>
-            <p class="info-item">
-              <span class="icon">👥</span>
-              <strong>Cupo:</strong> ${s.cupoActual}/${s.cupoTotal}
-            </p>
-            <div class="status-wrapper">
-              <span class="status-badge ${badge}">${s.status.toUpperCase()}</span>
-            </div>
-          </div>
-          <div class="card-actions">
-            <button class="btn-edit"   data-act="edit"   data-id="${s.id}">✏️ Editar</button>
-            <button class="btn-view"
-                    data-act="view"
-                    data-id="${s.id}"
-                    data-title="${esc(s.titulo)}"
-                    data-cupo-actual="${s.cupoActual}"
-                    data-cupo-total="${s.cupoTotal}">
-              👁️ Ver inscritos
-            </button>
-            <button class="btn-delete"
-                    data-act="delete"
-                    data-id="${s.id}"
-                    data-title="${esc(s.titulo)}">
-              🗑️ Eliminar
-            </button>
-          </div>
-        </div>`;
-      })
+    return ASESORIAS_CACHE;
+  }
+
+  async function apiCreateAsesoria(payload) {
+    return fetchJSON(API_ASESORIAS, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async function apiUpdateAsesoria(id, payload) {
+    return fetchJSON(`${API_ASESORIAS}/${encodeURIComponent(id)}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async function apiDeleteAsesoria(id) {
+    return fetchJSON(`${API_ASESORIAS}/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
+  }
+
+  async function fillDocentes(selectedValue = "") {
+    const select = $("docente");
+    if (!select) return;
+
+    select.disabled = true;
+    select.innerHTML = `<option value="">Cargando...</option>`;
+
+    try {
+      if (!DOCENTES_CACHE.length) {
+        await apiPersonas();
+      }
+
+      select.innerHTML =
+        `<option value="">— Selecciona —</option>` +
+        DOCENTES_CACHE.map(
+          (d) =>
+            `<option value="${esc(d.id)}">${esc(d.nombreCompleto)}</option>`
+        ).join("");
+
+      if (selectedValue) {
+        select.value = String(selectedValue);
+      }
+    } catch (err) {
+      console.error(err);
+      select.innerHTML = `<option value="">(Sin docentes)</option>`;
+    } finally {
+      select.disabled = false;
+    }
+  }
+
+  async function fillMaterias(selectedText = "") {
+    const select = $("materia");
+    if (!select) return;
+
+    select.disabled = true;
+    select.innerHTML = `<option value="">Cargando...</option>`;
+
+    try {
+      if (!MATERIAS_CACHE.length) {
+        await apiMaterias();
+      }
+
+      select.innerHTML =
+        `<option value="">— Selecciona materia —</option>` +
+        MATERIAS_CACHE.map(
+          (m) =>
+            `<option value="${esc(m.nombre)}">${esc(m.nombre)}</option>`
+        ).join("");
+
+      if (selectedText) {
+        select.value = String(selectedText);
+      }
+    } catch (err) {
+      console.error(err);
+      select.innerHTML = `<option value="">(Sin materias)</option>`;
+    } finally {
+      select.disabled = false;
+    }
+  }
+
+  let timeOptionsBuilt = false;
+
+  function buildTimeOptions() {
+    const horaIni = $("horaIni");
+    const horaFin = $("horaFin");
+
+    if (!horaIni || !horaFin || timeOptionsBuilt) return;
+    timeOptionsBuilt = true;
+
+    const times = [];
+    for (let m = 7 * 60; m <= MAX_END_MINUTES; m += 30) {
+      const hh = String(Math.floor(m / 60)).padStart(2, "0");
+      const mm = String(m % 60).padStart(2, "0");
+      times.push(`${hh}:${mm}`);
+    }
+
+    horaIni.innerHTML = times
+      .slice(0, -1)
+      .map((t) => `<option value="${t}">${t}</option>`)
       .join("");
 
-    cont
-      .querySelectorAll("[data-act='edit']")
-      .forEach((b) => (b.onclick = () => openEditModal(b.dataset.id)));
-    cont
-      .querySelectorAll("[data-act='delete']")
-      .forEach(
-        (b) => (b.onclick = () => openDelete(b.dataset.id, b.dataset.title))
-      );
-    cont
-      .querySelectorAll("[data-act='view']")
-      .forEach((b) => {
-        b.onclick = () =>
-          openStudentsModal(
-            b.dataset.id,
-            b.dataset.title,
-            Number(b.dataset.cupoActual),
-            Number(b.dataset.cupoTotal)
-          );
+    horaFin.innerHTML = times
+      .map((t) => `<option value="${t}">${t}</option>`)
+      .join("");
+
+    horaIni.value = "14:00";
+    horaFin.value = "16:00";
+
+    function syncEndOptions() {
+      const startMin = parseHHMM(horaIni.value) ?? 0;
+
+      [...horaFin.options].forEach((opt) => {
+        const val = parseHHMM(opt.value);
+        opt.disabled = val == null || val <= startMin || val > MAX_END_MINUTES;
       });
-  }
 
-  // ========================================================
-  //   Docentes / Materias (selects del modal)
-  // ========================================================
+      const endMin = parseHHMM(horaFin.value);
+      if (endMin == null || endMin <= startMin || endMin > MAX_END_MINUTES) {
+        const next = [...horaFin.options].find((opt) => !opt.disabled);
+        if (next) horaFin.value = next.value;
+      }
 
-  async function fillDocentes(selected = null) {
-    const sel = $("docente");
-    if (!sel) return;
-    sel.disabled = true;
-    sel.innerHTML = `<option value="">Cargando…</option>`;
-    try {
-      const list = PROFESORES.length ? PROFESORES : await apiProfesores();
-      sel.innerHTML =
-        `<option value="">— Selecciona —</option>` +
-        list
-          .map(
-            (p) =>
-              `<option value="${esc(p.id_Profesor)}">${esc(
-                p.nombreCompleto
-              )}</option>`
-          )
-          .join("");
-      if (selected) sel.value = String(selected);
-    } catch (e) {
-      console.error(e);
-      sel.innerHTML = `<option value="">(Sin docentes)</option>`;
-    } finally {
-      sel.disabled = false;
+      updateButtonsState();
     }
-  }
 
-  async function fillMaterias(selectedText = null) {
-    const sel = $("materia");
-    if (!sel) return;
-    sel.disabled = true;
-    sel.innerHTML = `<option value="">Cargando…</option>`;
-    try {
-      const list = await apiMaterias();
-      sel.innerHTML =
-        `<option value="">— Selecciona materia —</option>` +
-        list
-          .map(
-            (m) =>
-              `<option value="${esc(m.nombre)}">${esc(m.nombre)}</option>`
-          )
-          .join("");
-      if (selectedText) sel.value = selectedText;
-    } catch {
-      sel.innerHTML = `<option value="">(Sin materias)</option>`;
-    } finally {
-      sel.disabled = false;
-    }
-  }
+    horaIni.addEventListener("change", syncEndOptions);
+    horaFin.addEventListener("change", updateButtonsState);
 
-  // ========================================================
-  //   Validación de formulario
-  // ========================================================
+    syncEndOptions();
+  }
 
   function isFormValid() {
-    const materiaSel = $("materia");
-    const titulo = materiaSel
-      ? (materiaSel.value || "").trim()
-      : (($("titulo")?.value) || "").trim();
-    const idProf = ($("docente")?.value || "").trim();
-    const desc = ($("descripcion")?.value || "").trim();
+    const materia = ($("materia")?.value || "").trim();
+    const docente = ($("docente")?.value || "").trim();
+    const descripcion = ($("descripcion")?.value || "").trim();
     const fecha = ($("fecha")?.value || "").trim();
-
-    let horaTxt = "";
-    if ($("horaIni") && $("horaFin")) {
-      const ini = $("horaIni").value;
-      const fin = $("horaFin").value;
-      horaTxt = `${ini} - ${fin}`;
-    } else if ($("hora")) {
-      horaTxt = ($("hora").value || "").trim();
-    }
-
-    const rango = parseRangoTxt(horaTxt);
     const cupo = parseInt(($("cupo")?.value || "").trim(), 10);
 
-    const fechaOk = fecha && fecha >= todayISO();
-    const rangoOk = !!rango && rango.fin <= MAX_MIN;
-    const cupoOk = Number.isInteger(cupo) && cupo >= 1 && cupo <= 50;
+    let horaTexto = "";
+    if ($("horaIni") && $("horaFin")) {
+      horaTexto = formatRange($("horaIni").value, $("horaFin").value);
+    }
 
-    return !!(titulo && idProf && desc && fechaOk && rangoOk && cupoOk);
+    const rango = parseRange(horaTexto);
+
+    if (!materia) return false;
+    if (!docente) return false;
+    if (!descripcion) return false;
+    if (!fecha || fecha < todayISO()) return false;
+    if (!rango) return false;
+    if (rango.fin > MAX_END_MINUTES) return false;
+    if (!Number.isInteger(cupo) || cupo < 1 || cupo > 50) return false;
+
+    return true;
   }
 
   function updateButtonsState() {
     const form = qs(".modal-form");
     if (!form) return;
-    const btnGuardar = form.querySelector("[type='submit']");
-    const btnCancelar = form.querySelector(".btn-cancel");
-    const ok = isFormValid();
 
-    [btnGuardar, btnCancelar].forEach((btn) => {
-      if (!btn) return;
-      btn.disabled = !ok;
-      btn.classList.toggle("btn-disabled", !ok);
-    });
+    const submitBtn = form.querySelector("[type='submit']");
+    if (!submitBtn) return;
+
+    submitBtn.disabled = !isFormValid();
   }
 
   function wireFormValidation() {
-    const ids = [
+    [
       "materia",
-      "titulo",
       "docente",
       "descripcion",
       "fecha",
       "horaIni",
       "horaFin",
-      "hora",
       "cupo",
-    ];
-    ids.forEach((id) => {
+    ].forEach((id) => {
       const el = $(id);
       if (!el) return;
+
       el.addEventListener("input", updateButtonsState);
       el.addEventListener("change", updateButtonsState);
     });
   }
 
-  // ========================================================
-  //   Horario
-  // ========================================================
-
-  let timeBuilt = false;
-  function buildTimeOptions() {
-    const ini = $("horaIni"),
-      fin = $("horaFin");
-    if (!ini || !fin || timeBuilt) return;
-    timeBuilt = true;
-    const parts = [];
-    for (let m = 7 * 60; m <= MAX_MIN; m += 30) {
-      const h = String(Math.floor(m / 60)).padStart(2, "0");
-      const mi = String(m % 60).padStart(2, "0");
-      parts.push(`${h}:${mi}`);
-    }
-    ini.innerHTML = parts
-      .slice(0, -1)
-      .map((v) => `<option value="${v}">${v}</option>`)
-      .join("");
-    fin.innerHTML = parts
-      .map((v) => `<option value="${v}">${v}</option>`)
-      .join("");
-
-    ini.addEventListener("change", () => {
-      const start = parseHHMM(ini.value) || 0;
-      [...fin.options].forEach((o) => {
-        o.disabled = parseHHMM(o.value) <= start;
-      });
-      if (parseHHMM(fin.value) <= start)
-        fin.value = parts.find((v) => parseHHMM(v) > start) || "16:00";
-      updateButtonsState();
-    });
-
-    fin.addEventListener("change", () => {
-      if (parseHHMM(fin.value) > MAX_MIN) {
-        fin.value = "16:00";
-      }
-      updateButtonsState();
-    });
-
-    ini.value = "14:00";
-    fin.value = "16:00";
-    ini.dispatchEvent(new Event("change"));
+  function renderEmpty(container) {
+    container.innerHTML = `
+      <div class="empty-wrap">
+        <div class="empty-icon" aria-hidden="true">📚</div>
+        <div class="empty-title">No hay asesorías</div>
+        <div class="empty-sub">Crea una nueva asesoría con el botón de arriba.</div>
+      </div>
+    `;
   }
 
-  // ========================================================
-  //   Modal crear / editar
-  // ========================================================
+  function renderList(list) {
+    const container = $("asesoriasContainer");
+    if (!container) return;
 
-  function openModalEmpty() {
-    $("modalTitle").textContent = "Crear Nueva Asesoría";
-    $("asesoriaId").value = "";
-    const txtTitulo = $("titulo");
-    if (txtTitulo) txtTitulo.value = "";
-    const selMateria = $("materia");
-    if (selMateria) selMateria.value = "";
-    $("descripcion").value = "";
-    $("fecha").value = "";
-    if ($("horaIni") && $("horaFin")) {
-      $("horaIni").value = "14:00";
-      $("horaFin").value = "16:00";
-    } else if ($("hora")) {
-      $("hora").value = "14:00 - 16:00";
+    if (!Array.isArray(list) || !list.length) {
+      renderEmpty(container);
+      return;
     }
-    $("cupo").value = "";
-    const m = $("modal");
-    if (!m) return;
-    m.style.display = "flex";
-    m.setAttribute("aria-hidden", "false");
+
+    const ordered = [...list].sort((a, b) => {
+      const score = (status) => {
+        const st = String(status || "").toLowerCase();
+        if (st === "en curso") return 0;
+        if (st === "pendiente") return 1;
+        return 2;
+      };
+
+      const sa = score(a.status);
+      const sb = score(b.status);
+
+      if (sa !== sb) return sa - sb;
+      if (a.fecha !== b.fecha) return String(a.fecha).localeCompare(String(b.fecha));
+      return String(a.titulo).localeCompare(String(b.titulo), "es", {
+        sensitivity: "base",
+      });
+    });
+
+    container.innerHTML = ordered
+      .map((item) => {
+        const status = String(item.status || "");
+        const statusClass =
+          status === "En curso"
+            ? "status-en-curso"
+            : status === "Pendiente"
+            ? "status-pendiente"
+            : "status-finalizada";
+
+        return `
+          <div class="asesoria-card" data-id="${esc(item.id)}">
+            <h2 class="card-title">${esc(item.titulo)}</h2>
+
+            <div class="card-info">
+              <p class="info-item">
+                <span class="icon">👨‍🏫</span>
+                <strong>Docente:</strong> ${esc(item.docenteNombre || "—")}
+              </p>
+
+              <p class="info-item">
+                <span class="icon">📝</span>
+                <strong>Descripción:</strong> ${esc(item.descripcion || "—")}
+              </p>
+
+              <p class="info-item">
+                <span class="icon">📅</span>
+                <strong>Fecha:</strong> ${esc(item.fecha || "—")}
+              </p>
+
+              <p class="info-item">
+                <span class="icon">🕐</span>
+                <strong>Hora:</strong> ${esc(item.hora || "—")}
+              </p>
+
+              <p class="info-item">
+                <span class="icon">👥</span>
+                <strong>Cupo:</strong> ${item.cupoActual}/${item.cupoTotal}
+              </p>
+
+              <div class="status-wrapper">
+                <span class="status-badge ${statusClass}">
+                  ${esc(status.toUpperCase())}
+                </span>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <button class="btn-edit" data-action="edit" data-id="${esc(item.id)}">✏️ Editar</button>
+              <button class="btn-view" data-action="view" data-id="${esc(item.id)}">👁️ Ver inscritos</button>
+              <button class="btn-delete" data-action="delete" data-id="${esc(item.id)}" data-title="${esc(item.titulo)}">🗑️ Eliminar</button>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+
+    container.querySelectorAll("[data-action='edit']").forEach((btn) => {
+      btn.addEventListener("click", () => openEditModal(btn.dataset.id));
+    });
+
+    container.querySelectorAll("[data-action='view']").forEach((btn) => {
+      btn.addEventListener("click", () => openStudentsModal(btn.dataset.id));
+    });
+
+    container.querySelectorAll("[data-action='delete']").forEach((btn) => {
+      btn.addEventListener("click", () =>
+        openDelete(btn.dataset.id, btn.dataset.title)
+      );
+    });
+  }
+
+  async function render() {
+    try {
+      const list = await apiListAsesorias();
+      renderList(list);
+    } catch (err) {
+      console.error(err);
+      const container = $("asesoriasContainer");
+      if (container) renderEmpty(container);
+      toast("No se pudo cargar la lista.", "error");
+    }
+  }
+
+  function resetModalForm() {
+    if ($("asesoriaId")) $("asesoriaId").value = "";
+    if ($("materia")) $("materia").value = "";
+    if ($("docente")) $("docente").value = "";
+    if ($("descripcion")) $("descripcion").value = "";
+    if ($("fecha")) $("fecha").value = "";
+    if ($("cupo")) $("cupo").value = "";
+
+    if ($("horaIni")) $("horaIni").value = "14:00";
+    if ($("horaFin")) $("horaFin").value = "16:00";
+  }
+
+  async function openModal() {
+    const modal = $("modal");
+    if (!modal) return;
+
+    $("modalTitle").textContent = "Crear Nueva Asesoría";
+    resetModalForm();
+
+    await Promise.all([fillMaterias(), fillDocentes()]);
+
+    modal.style.display = "flex";
+    modal.setAttribute("aria-hidden", "false");
     updateButtonsState();
   }
 
   function closeModal() {
-    const m = $("modal");
-    if (!m) return;
-    m.style.display = "none";
-    m.setAttribute("aria-hidden", "true");
+    const modal = $("modal");
+    if (!modal) return;
+
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
   }
 
-  function wireModalClose() {
-    const m = $("modal");
-    if (!m) return;
-    m.addEventListener("mousedown", (e) => {
-      if (e.target === m) closeModal();
-    });
-    document.addEventListener("click", (e) => {
-      const el = e.target;
-      if (el.closest(".modal-close") || el.closest(".btn-cancel")) {
-        e.preventDefault();
-        closeModal();
-      }
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        if (getComputedStyle(m).display !== "none") closeModal();
-      }
-    });
+  async function openEditModal(id) {
+    const asesoria = ASESORIAS_CACHE.find((a) => String(a.id) === String(id));
+    if (!asesoria) {
+      toast("No se encontró la asesoría.", "error");
+      return;
+    }
+
+    const modal = $("modal");
+    if (!modal) return;
+
+    $("modalTitle").textContent = "Editar Asesoría";
+    $("asesoriaId").value = asesoria.id;
+
+    await Promise.all([
+      fillMaterias(asesoria.titulo),
+      fillDocentes(asesoria.id_profesor),
+    ]);
+
+    $("descripcion").value = asesoria.descripcion || "";
+    $("fecha").value = asesoria.fecha || "";
+    $("cupo").value = String(asesoria.cupoTotal || "");
+
+    const range = parseRange(asesoria.hora || "");
+    if (range && $("horaIni") && $("horaFin")) {
+      const iniH = String(Math.floor(range.ini / 60)).padStart(2, "0");
+      const iniM = String(range.ini % 60).padStart(2, "0");
+      const finH = String(Math.floor(range.fin / 60)).padStart(2, "0");
+      const finM = String(range.fin % 60).padStart(2, "0");
+
+      $("horaIni").value = `${iniH}:${iniM}`;
+      $("horaIni").dispatchEvent(new Event("change"));
+      $("horaFin").value = `${finH}:${finM}`;
+    }
+
+    modal.style.display = "flex";
+    modal.setAttribute("aria-hidden", "false");
+    updateButtonsState();
   }
 
-  // ---------- Guardar ----------
-  async function save(ev) {
-    ev.preventDefault();
+  async function saveAsesoria(event) {
+    event.preventDefault();
 
-    const id = $("asesoriaId").value.trim();
-    const materiaSel = $("materia");
-    const titulo = materiaSel
-      ? (materiaSel.value || "").trim()
-      : (($("titulo")?.value) || "").trim();
-    const idProf = $("docente").value.trim();
-    const desc = $("descripcion").value.trim();
-    const fecha = $("fecha").value;
+    const user = getLoggedUser();
 
-    let horaTxt = "";
-    if ($("horaIni") && $("horaFin")) {
-      const ini = $("horaIni").value;
-      const fin = $("horaFin").value;
-      horaTxt = `${ini} - ${fin}`;
-    } else {
-      horaTxt = ($("hora")?.value || "").trim();
-    }
-
-    const cupo = parseInt($("cupo").value, 10);
-
-    if (!titulo) {
-      toast("Selecciona la materia (título).", "error");
+    if (!user || !user.numeroControl) {
+      toast("No se encontró la sesión del auxiliar. Vuelve a iniciar sesión.", "error", 3000);
       return;
     }
-    if (!idProf || !desc) {
-      toast("Completa docente y descripción.", "error");
+
+    const id = ($("asesoriaId")?.value || "").trim();
+    const materia = ($("materia")?.value || "").trim();
+    const docente = ($("docente")?.value || "").trim();
+    const descripcion = ($("descripcion")?.value || "").trim();
+    const fecha = ($("fecha")?.value || "").trim();
+    const cupo = parseInt(($("cupo")?.value || "").trim(), 10);
+
+    const horaIni = $("horaIni")?.value || "";
+    const horaFin = $("horaFin")?.value || "";
+    const hora = formatRange(horaIni, horaFin);
+
+    if (!materia) {
+      toast("Selecciona una materia.", "warn");
       return;
     }
+
+    if (!docente) {
+      toast("Selecciona un docente.", "warn");
+      return;
+    }
+
+    if (!descripcion) {
+      toast("Escribe la descripción.", "warn");
+      return;
+    }
+
     if (!fecha || fecha < todayISO()) {
-      toast("Selecciona una fecha válida (hoy o futuro).", "error");
-      $("fecha").min = todayISO();
+      toast("Selecciona una fecha válida.", "warn");
       return;
     }
 
-    const rango = parseRangoTxt(horaTxt);
-    if (!rango) {
-      toast("Hora inválida. Usa HH:MM - HH:MM (fin > inicio).", "error");
+    const range = parseRange(hora);
+    if (!range) {
+      toast("Selecciona una hora válida.", "warn");
       return;
     }
-    if (rango.fin > MAX_MIN) {
-      toast("No se aceptan asesorías después de las 16:00.", "error");
+
+    if (range.fin > MAX_END_MINUTES) {
+      toast("La asesoría no puede terminar después de las 16:00.", "warn");
       return;
     }
-    if (!(Number.isInteger(cupo) && cupo >= 1 && cupo <= 50)) {
-      toast("Cupo total 1..50.", "error");
+
+    if (!Number.isInteger(cupo) || cupo < 1 || cupo > 50) {
+      toast("El cupo debe estar entre 1 y 50.", "warn");
       return;
     }
 
     const payload = {
-      id: id || undefined,
-      titulo,
-      id_profesor: Number(idProf),
-      descripcion: desc,
+      materia,
+      docente,
+      descripcion,
       fecha,
-      hora: horaTxt,
-      cupoTotal: cupo,
-      cupoActual: 0,
-      auxiliar: 0,
+      hora,
+      cupo,
+      auxiliar: Number(user.numeroControl)
     };
 
     try {
-      if (id) await apiUpdate(payload);
-      else await apiCreate(payload);
-      toast("Asesoría guardada.", "success");
-      closeModal();
-      render();
-    } catch (e) {
-      toast(e.message || "No se pudo guardar.", "error");
-    }
-  }
-
-  // ---------- Editar ----------
-  async function openEditModal(id) {
-    try {
-      const list = await apiList();
-      const s = list.find((x) => x.id === String(id));
-      if (!s) return;
-
-      await Promise.all([
-        fillDocentes(s.id_profesor),
-        fillMaterias(s.titulo),
-      ]);
-
-      $("modalTitle").textContent = "Editar Asesoría";
-      $("asesoriaId").value = s.id;
-
-      if ($("materia")) $("materia").value = s.titulo;
-      if ($("titulo")) $("titulo").value = s.titulo;
-
-      $("descripcion").value = s.descripcion;
-      $("fecha").value = s.fecha;
-
-      if ($("horaIni") && $("horaFin")) {
-        const r = parseRangoTxt(s.hora);
-        if (r) {
-          const hh = (m) =>
-            `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(
-              m % 60
-            ).padStart(2, "0")}`;
-          $("horaIni").value = hh(r.ini);
-          $("horaFin").value = hh(r.fin);
-          $("horaIni").dispatchEvent(new Event("change"));
-        }
-      } else if ($("hora")) {
-        $("hora").value = s.hora;
+      if (id) {
+        await apiUpdateAsesoria(id, payload);
+        toast("Asesoría actualizada correctamente.", "success");
+      } else {
+        await apiCreateAsesoria(payload);
+        toast("Asesoría guardada correctamente.", "success");
       }
 
-      $("cupo").value = s.cupoTotal;
-
-      const m = $("modal");
-      m.style.display = "flex";
-      m.setAttribute("aria-hidden", "false");
-      updateButtonsState();
-    } catch {
-      toast("No se pudo abrir la edición.", "error");
+      closeModal();
+      await render();
+    } catch (err) {
+      console.error(err);
+      toast(err.message || "No se pudo guardar la asesoría.", "error");
     }
   }
-  window.openEditModal = openEditModal;
 
-  // ---------- Eliminar ----------
   async function openDelete(id, title) {
-    if (!confirm(`¿Seguro que deseas eliminar la asesoría "${title}"?`)) return;
+    const ok = await askConfirm(
+      `¿Seguro que deseas eliminar la asesoría "${title}"?`
+    );
+    if (!ok) return;
+
     try {
-      await apiDelete(id);
-      toast("Eliminada.", "success");
-      render();
-    } catch {
-      toast("No se pudo eliminar.", "error");
+      await apiDeleteAsesoria(id);
+      toast("Asesoría eliminada correctamente.", "success");
+      await render();
+    } catch (err) {
+      console.error(err);
+      toast(err.message || "No se pudo eliminar la asesoría.", "error");
     }
   }
-  window.openDeleteModal = openDelete;
 
-  // ========================================================
-  //   Ver alumnos inscritos
-  // ========================================================
-
-  async function openStudentsModal(idAsesoria, titulo = "", cupoActual = 0, cupoTotal = 0) {
-    const m = $("studentsModal");
+  function openStudentsModal(id) {
+    const modal = $("studentsModal");
+    const listContainer = $("studentsList");
     const title = $("studentsModalTitle");
-    const listNode = $("studentsList");
 
-    if (!m || !title || !listNode) {
-      console.warn("Modal de alumnos no encontrado en el HTML.");
+    if (!modal || !listContainer || !title) return;
+
+    const asesoria = ASESORIAS_CACHE.find((a) => String(a.id) === String(id));
+    if (!asesoria) {
+      toast("No se encontró la asesoría.", "error");
       return;
     }
 
-    title.textContent = titulo
-      ? `Alumnos inscritos – ${titulo}`
-      : "Alumnos inscritos";
+    title.textContent = `Alumnos Inscritos — ${asesoria.titulo}`;
 
-    listNode.innerHTML =
-      `<div class="student-item"><div>Cargando lista…</div></div>`;
-    m.style.display = "flex";
-    m.setAttribute("aria-hidden", "false");
+    const alumnos = Array.isArray(asesoria.alumnos) ? asesoria.alumnos : [];
 
-    try {
-      const data = await jfetch(
-        `${API}?action=inscritos&id_asesoria=${encodeURIComponent(idAsesoria)}`
-      );
-      const rows = Array.isArray(data) ? data : [];
+    if (!alumnos.length) {
+      listContainer.innerHTML = `
+        <div class="empty-wrap">
+          <div class="empty-title">No hay alumnos inscritos</div>
+          <div class="empty-sub">Cupo actual: ${asesoria.cupoActual}/${asesoria.cupoTotal}</div>
+        </div>
+      `;
+    } else {
+      listContainer.innerHTML = `
+        <div class="students-summary">
+          <strong>Cupo actual:</strong> ${asesoria.cupoActual}/${asesoria.cupoTotal}
+        </div>
+        <div class="students-items">
+          ${alumnos
+            .map((al, index) => {
+              const nc = String(
+                al.no_control ?? al.numeroControl ?? al.noControl ?? ""
+              ).trim();
 
-      if (!rows.length) {
-        title.textContent = titulo
-          ? `Alumnos inscritos – ${titulo} (0/${cupoTotal || "?"})`
-          : `Alumnos inscritos (0/${cupoTotal || "?"})`;
-        listNode.innerHTML =
-          `<div class="student-item"><div>Sin alumnos inscritos todavía.</div></div>`;
-        return;
-      }
+              const nombre =
+                al.nombreCompleto ||
+                al.nombre ||
+                ALUMNO_MAP.get(nc) ||
+                `Alumno ${index + 1}`;
 
-      const inscritos = rows.length;
-      const totalStr = cupoTotal ? ` / ${cupoTotal}` : "";
-      const llenoStr =
-        cupoTotal && inscritos >= cupoTotal ? " – CUPO LLENO" : "";
-
-      title.textContent = titulo
-        ? `Alumnos inscritos – ${titulo} (${inscritos}${totalStr})${llenoStr}`
-        : `Alumnos inscritos (${inscritos}${totalStr})${llenoStr}`;
-
-      listNode.innerHTML = rows
-        .map((alum) => {
-          const nc =
-            alum.no_control ||
-            alum.noControl ||
-            alum.numeroControl ||
-            alum.nocontrol ||
-            "—";
-
-          const baseNombre =
-            alum.nombreCompleto || alum.nombre || alum.nombre_alumno || "";
-          const apP =
-            alum.apellidoPaterno || alum.apellido_paterno || alum.apellido || "";
-          const apM =
-            alum.apellidoMaterno || alum.apellido_materno || "";
-
-          let nombreFull = [baseNombre, apP, apM]
-            .filter(Boolean)
-            .join(" ")
-            .trim();
-
-          let nombre = nombreFull || baseNombre || "—";
-
-          // 🔴 AQUÍ forzamos el nombre COMPLETO usando PERSONAS_API si existe
-          const idAlumno = String(nc);
-          if (ALUM_MAP[idAlumno]) {
-            nombre = ALUM_MAP[idAlumno]; // nombre completo desde personas_api
-          }
-
-          const correo = alum.correo || alum.email || alum.correoInstitucional || "";
-
-          return `
-          <div class="student-item">
-            <div class="student-main">
-              <strong>${esc(nombre)}</strong>
-              <span class="student-nc">(${esc(nc)})</span>
-            </div>
-            ${
-              correo
-                ? `<div class="student-mail">${esc(correo)}</div>`
-                : ""
-            }
-          </div>`;
-        })
-        .join("");
-    } catch (e) {
-      console.error(e);
-      listNode.innerHTML = `
-        <div class="student-item">
-          <div>Error al cargar la lista de alumnos inscritos.</div>
-        </div>`;
+              return `
+                <div class="student-item">
+                  <strong>${esc(toTitleCase(nombre))}</strong><br>
+                  <span>No. Control: ${esc(nc || "—")}</span>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      `;
     }
 
-    m.onclick = (e) => {
-      if (e.target === m) closeStudentsModal();
-    };
+    modal.style.display = "flex";
+    modal.setAttribute("aria-hidden", "false");
   }
-  window.openStudentsModal = openStudentsModal;
 
   function closeStudentsModal() {
-    const m = $("studentsModal");
-    if (!m) return;
-    m.style.display = "none";
-    m.setAttribute("aria-hidden", "true");
+    const modal = $("studentsModal");
+    if (!modal) return;
+
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
   }
+
+  function wireModalCloseBehavior() {
+    const modal = $("modal");
+    const studentsModal = $("studentsModal");
+
+    if (modal) {
+      modal.addEventListener("mousedown", (e) => {
+        if (e.target === modal) closeModal();
+      });
+    }
+
+    if (studentsModal) {
+      studentsModal.addEventListener("mousedown", (e) => {
+        if (e.target === studentsModal) closeStudentsModal();
+      });
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+        closeStudentsModal();
+      }
+    });
+  }
+
+  function setupMinDate() {
+    const fecha = $("fecha");
+    if (!fecha) return;
+    fecha.min = todayISO();
+  }
+
+  async function init() {
+    buildTimeOptions();
+    setupMinDate();
+    wireFormValidation();
+    wireModalCloseBehavior();
+
+    try {
+      await Promise.all([apiPersonas(), apiMaterias()]);
+    } catch (err) {
+      console.error(err);
+    }
+
+    await render();
+  }
+
+  window.openModal = openModal;
+  window.closeModal = closeModal;
+  window.saveAsesoria = saveAsesoria;
   window.closeStudentsModal = closeStudentsModal;
 
-  // ========================================================
-  //   Abrir modal crear
-  // ========================================================
-
-  window.openModal = async function () {
-    await Promise.all([fillDocentes(), fillMaterias()]);
-    buildTimeOptions();
-    openModalEmpty();
-  };
-
-  // ========================================================
-  //   Init
-  // ========================================================
-
-  document.addEventListener("DOMContentLoaded", async () => {
-    await loadProfesores(); // carga docentes y alumnos (PROF_MAP y ALUM_MAP)
-    render();
-
-    if ($("fecha")) $("fecha").min = todayISO();
-    const form = qs(".modal-form");
-    if (form) form.addEventListener("submit", save);
-    wireModalClose();
-    buildTimeOptions();
-    wireFormValidation();
-    updateButtonsState();
-  });
+  document.addEventListener("DOMContentLoaded", init);
 })();

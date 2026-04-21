@@ -1,7 +1,7 @@
 // =========================
 // API CONFIG
 // =========================
-const API = "/backend/agregar-materiales.php";
+const API = "/api/materiales";
 
 // =========================
 // Mini helper DOM

@@ -4,7 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Solicitud de Materiales (Alumnos)</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
   <link rel="stylesheet" href="solicitud-materiales.css" />
 </head>
 
@@ -12,32 +16,34 @@
   <div class="container">
     <!-- ENCABEZADO -->
     <header>
-      <img src="../../assets/logo1.png" alt="TecNM" class="logo"/>
+      <img src="../../assets/logo1.png" alt="TecNM" class="logo" />
+
       <div class="titulo">
         <h1>SOLICITUD DEPARTAMENTO DE</h1>
         <h2>INGENIERÍA ELÉCTRICA–ELECTRÓNICA</h2>
         <h3>MATERIALES</h3>
       </div>
-      <img src="../../assets/escudo.png" alt="Escudo" class="logo"/>
+
+      <img src="../../assets/escudo.png" alt="Escudo" class="logo" />
     </header>
 
     <!-- TARJETA / ÁREA DE TRABAJO -->
     <section class="card">
-      <!-- FILA 1: Fecha / Hora / Número de vale / Auxiliar -->
+      <!-- FILA 1 -->
       <div class="top-row">
         <div class="field-line">
           <label for="fecha">Fecha:</label>
-          <input type="date" id="fecha" class="input-line"/>
+          <input type="date" id="fecha" class="input-line" />
         </div>
 
         <div class="field-line">
           <label for="hora">Hora:</label>
-          <input type="time" id="hora" class="input-line"/>
+          <input type="time" id="hora" class="input-line" />
         </div>
 
         <div class="field-line">
           <label for="folio">Número de vale:</label>
-          <input type="text" id="folio" class="input-line" readonly/>
+          <input type="text" id="folio" class="input-line" readonly />
         </div>
 
         <div class="field-line">
@@ -48,7 +54,7 @@
         </div>
       </div>
 
-      <!-- FILA 2: Docente / Carrera / Alumno / Materia / Mesa -->
+      <!-- FILA 2 -->
       <div class="top-row">
         <div class="field-line">
           <label for="docente">Docente:</label>
@@ -92,16 +98,14 @@
         </div>
       </div>
 
-      <!-- FILA 3: Material (finder) / Cantidad / Agregar -->
+      <!-- FILA 3 -->
       <div class="middle-row">
-        <!-- MATERIAL: buscador -->
         <div class="field">
           <label for="materialSearch">Material:</label>
 
           <div class="finder" id="finder">
             <i class="fa-solid fa-magnifying-glass finder-icon" aria-hidden="true"></i>
 
-            <!-- Input visible -->
             <input
               id="materialSearch"
               type="text"
@@ -113,10 +117,8 @@
               aria-haspopup="listbox"
             />
 
-            <!-- Valor real (id_Material) que usa el JS -->
             <input type="hidden" id="material" value="" />
 
-            <!-- Lista de sugerencias -->
             <div
               class="finder-list hidden"
               id="finderList"
@@ -129,14 +131,14 @@
         <div class="field qty-wrap">
           <label for="cantidad">Cantidad:</label>
           <div class="cantidad-container">
-            <input type="number" id="cantidad" min="1" value="1"/>
-            <button id="plusQty" class="btn btn-add" title="Aumentar cantidad">
+            <input type="number" id="cantidad" min="1" value="1" />
+            <button id="plusQty" class="btn btn-add" title="Aumentar cantidad" type="button">
               <i class="fa-solid fa-plus"></i>
             </button>
           </div>
         </div>
 
-        <button class="btn btn-primary" id="agregar" title="Agregar a la tabla">
+        <button class="btn btn-primary" id="agregar" title="Agregar a la tabla" type="button">
           Agregar
         </button>
       </div>
@@ -162,7 +164,7 @@
     <!-- FOOTER -->
     <footer class="footer-bar">
       <div class="left-actions">
-        <button class="btn btn-primary" id="guardar">
+        <button class="btn btn-primary" id="guardar" type="button">
           <i class="fas fa-save"></i> Guardar solicitud
         </button>
 
@@ -170,6 +172,7 @@
           class="btn btn-danger"
           id="cancelarPedido"
           title="Cancelar materiales en espera"
+          type="button"
         >
           <i class="fa-solid fa-rotate-left"></i> Cancelar solicitud
         </button>
@@ -180,6 +183,7 @@
           class="btn btn-primary"
           id="btnVerCompras"
           title="Ver solicitud de hoy"
+          type="button"
         >
           <i class="fa-solid fa-receipt"></i> Ver la solicitud
         </button>
@@ -197,12 +201,13 @@
     </footer>
   </div>
 
-  <!-- UI centrada: Toast + Modal -->
+  <!-- UI centrada -->
   <div id="ui-layer">
     <div id="toastCenter" aria-live="polite" role="status"></div>
 
     <div id="modalRoot" class="hidden" aria-hidden="true">
       <div class="modal-backdrop"></div>
+
       <div
         class="modal-card"
         role="dialog"
@@ -212,6 +217,7 @@
         <div class="modal-icon" id="modalIcon" aria-hidden="true">!</div>
         <h3 id="modalTitle">¿Estás seguro?</h3>
         <p id="modalMsg">Esta acción no se puede deshacer.</p>
+
         <div class="modal-actions">
           <button type="button" class="btn btn-danger" id="modalAccept">Sí</button>
           <button type="button" class="btn btn-primary" id="modalCancel">No</button>
@@ -220,6 +226,48 @@
     </div>
   </div>
 
+  <!-- Overlay de proceso PDF -->
+  <div id="pdfOverlay" class="pdf-overlay hidden" aria-hidden="true">
+    <div class="pdf-backdrop"></div>
+
+    <div
+      class="pdf-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="pdfTitle"
+    >
+      <div class="pdf-bot-wrap">
+        <img
+          id="pdfBotImg"
+          src="/public/assets/shimeji.png"
+          alt="Bot asistente"
+          class="pdf-bot"
+        />
+      </div>
+
+      <div class="pdf-content">
+        <div class="pdf-badge">PDF</div>
+        <h3 id="pdfTitle">Preparando tu solicitud</h3>
+        <p id="pdfMessage">Iniciando proceso...</p>
+
+        <div class="pdf-progress-wrap">
+          <div class="pdf-progress-bar">
+            <div id="pdfProgressFill" class="pdf-progress-fill"></div>
+          </div>
+          <div id="pdfProgressText" class="pdf-progress-text">0%</div>
+        </div>
+
+        <div class="pdf-spinner-wrap">
+          <div class="pdf-spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- html2pdf -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- SOLO tu JS principal -->
   <script src="../../src/solicitud-materiales.js"></script>
 </body>
 </html>

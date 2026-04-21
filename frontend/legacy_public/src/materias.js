@@ -1,14 +1,8 @@
-// =========================
-// Config
-// =========================
-const API = "/backend/materias.php";
+const API = "/api/materias";
 const DEFAULT_CARRERA_ID = 11;
 
 const qs  = (s, el=document) => el.querySelector(s);
 
-// =========================
-// Toasts
-// =========================
 let __toastTimer=null;
 function showToast({title="",desc="",type="info",duration=2200}={}){
   const host=document.getElementById("toastOverlay"); if(!host) return;
@@ -27,14 +21,11 @@ function showToast({title="",desc="",type="info",duration=2200}={}){
   };
   host.onclick=close; __toastTimer=setTimeout(close,duration);
 }
-const toastSuccess = msg => showToast({title:"¡Listo!",   desc:msg, type:"success"});
-const toastError   = msg => showToast({title:"Ups",       desc:msg, type:"error"});
-const toastInfo    = msg => showToast({title:"Aviso",     desc:msg, type:"info"});
-const toastWarn    = msg => showToast({title:"Atención",  desc:msg, type:"warn"});
+const toastSuccess = msg => showToast({title:"¡Listo!",desc:msg,type:"success"});
+const toastError   = msg => showToast({title:"Ups",desc:msg,type:"error"});
+const toastInfo    = msg => showToast({title:"Aviso",desc:msg,type:"info"});
+const toastWarn    = msg => showToast({title:"Atención",desc:msg,type:"warn"});
 
-// =========================
-// Confirm
-// =========================
 let __confirmBusy=false;
 function showConfirm(text="¿Seguro que deseas continuar?", opts={}){
   const overlay=document.getElementById("confirm");
@@ -80,9 +71,6 @@ function showConfirm(text="¿Seguro que deseas continuar?", opts={}){
   });
 }
 
-// =========================
-// Fetch helper
-// =========================
 async function fetchJson(url, options){
   const res = await fetch(url, options);
   let data = {};
@@ -91,21 +79,16 @@ async function fetchJson(url, options){
   return data;
 }
 
-// =========================
-// Normalización / utilidades
-// =========================
 const removeAccents = s => (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 const norm = s => removeAccents(s).toLowerCase().replace(/[^\p{L}\s\-\.()\/&#]/gu," ").replace(/\s+/g," ").trim();
 
 const STOP = new Set(["de","del","la","el","los","las","en","y","e","para","por","con","a","ii","iii","iv","v","vi","vii","viii","ix","x","i"]);
 const singular = w => (w.endsWith("es") && w.length>4) ? w.slice(0,-2) : (w.endsWith("s") && w.length>3 ? w.slice(0,-1) : w);
 
-// Romanos 1..10
 const ROMAP = new Map([[1,"I"],[2,"II"],[3,"III"],[4,"IV"],[5,"V"],[6,"VI"],[7,"VII"],[8,"VIII"],[9,"IX"],[10,"X"]]);
 const TRAIL_ROM_RE = /\s+(X|IX|VIII|VII|VI|V|IV|III|II|I)$/i;
 const ANY_DIGIT_RE = /\d/;
 
-// Palabras 1..10
 const WORD2NUM = new Map([
   ["uno",1],["dos",2],["tres",3],["cuatro",4],["cinco",5],
   ["seis",6],["siete",7],["ocho",8],["nueve",9],["diez",10]
@@ -113,14 +96,12 @@ const WORD2NUM = new Map([
 const TRAIL_WORD_RE = new RegExp(`\\s+(${[...WORD2NUM.keys()].join("|")})\\s*$`,"i");
 const ANY_WORD_NUM_RE = new RegExp(`\\b(${[...WORD2NUM.keys()].join("|")})\\b`,"i");
 
-// ... 2 → ... II
 function replaceTrailingArabicWithRoman(str){
   const m = str.match(/\s+([1-9]|10)\s*$/);
   if(!m) return null;
   const n = parseInt(m[1],10);
   return str.replace(/\s+[0-9]+\s*$/," "+ROMAP.get(n));
 }
-// ... uno|dos → ... I|II
 function replaceTrailingWordWithRoman(str){
   const m = str.match(TRAIL_WORD_RE);
   if(!m) return null;
@@ -128,7 +109,6 @@ function replaceTrailingWordWithRoman(str){
   return str.replace(TRAIL_WORD_RE, " "+ROMAP.get(n));
 }
 
-// parse nombre → {base, nivel}
 function parseMateriaNombre(raw){
   const original = (raw||"").trim();
   let s = original.replace(/\s+/g," ");
@@ -139,7 +119,7 @@ function parseMateriaNombre(raw){
   if (convWord) s = convWord;
 
   if (ANY_DIGIT_RE.test(s)) {
-    return { error: "No se permiten números arábigos en el nombre. Usa romanos (I, II, III…)." };
+    return { error: "No se permiten números arábigos. Usa romanos (I, II, III…)." };
   }
   if (ANY_WORD_NUM_RE.test(s)) {
     return { error: "No se permiten números escritos con palabras. Usa romanos (I, II, III…)." };
@@ -161,7 +141,6 @@ function parseMateriaNombre(raw){
   return { original: s, base: baseCanon, nivel };
 }
 
-// similitud
 function jaccardTokens(a, b){
   const A = new Set(a.split(" ").filter(Boolean));
   const B = new Set(b.split(" ").filter(Boolean));
@@ -191,42 +170,38 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
   const baseN = pN.base;
   const nivN  = pN.nivel;
 
-  let mejor=null, bestScore=0;
-
   for(const m of materias){
     if (idIgnorar!=null && String(m.id_Materia)===String(idIgnorar)) continue;
-    const pE = parseMateriaNombre(m.materia);
+    const pE = parseMateriaNombre(m.nombre);
     if (pE.error) continue;
 
     const baseE = pE.base;
     const nivE  = pE.nivel;
 
     if (baseE===baseN && nivE===nivN){
-      return { existe:true, con:m.materia, motivo:"duplicada" };
+      return { existe:true, con:m.nombre, motivo:"duplicada" };
     }
     if (baseE===baseN && (nivE==="" || nivN==="")){
-      return { existe:true, con:m.materia, motivo:"con_sin_nivel" };
+      return { existe:true, con:m.nombre, motivo:"con_sin_nivel" };
     }
 
     const jac = jaccardTokens(baseE, baseN);
     const ed  = editDistance(baseE, baseN);
     if ((jac>=0.75 || ed<=2)){
       if (nivE===nivN || nivE==="" || nivN===""){
-        return { existe:true, con:m.materia, motivo:"muy_parecida" };
+        return { existe:true, con:m.nombre, motivo:"muy_parecida" };
       }
-      if (jac>bestScore){ bestScore=jac; mejor=m.materia; }
     }
   }
-  return { existe:false, con:mejor };
+  return { existe:false, con:null };
 }
 
-// =========================
 (function(){
   const input        = qs('#nombreMateria');
   const btnGuardar   = qs('#Guardar');
   const btnModificar = qs('#Modificar');
   const btnEliminar  = qs('#Eliminar');
-  const btnCancelar  = qs('#Cancelar'); // NUEVO
+  const btnCancelar  = qs('#Cancelar');
   const tbody        = qs('#tbody');
   const tablaVacia   = qs('#tablaVacia');
   const homeLink     = qs('.iconos .icono');
@@ -236,7 +211,6 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
   let materias = [];
   let filaSel  = null;
   let nombreOriginal = "";
-  let purgadaInactivas = false;
 
   function isDirty(){
     if(!filaSel) return false;
@@ -263,7 +237,6 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
       btnEliminar.title     = changed ? "Tienes cambios sin guardar. Actualiza primero." : "";
     }
 
-    // NUEVO: botón Cancelar sólo activo cuando hay algo que limpiar
     if (btnCancelar) {
       btnCancelar.disabled = !hasUnsaved();
     }
@@ -297,11 +270,11 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
       tr.dataset.id        = m.id_Materia;
       tr.dataset.idCarrera = m.id_Carrera;
       tr.dataset.estado    = m.id_Estado;
-      tr.innerHTML = `<td>${m.materia}</td>`;
+      tr.innerHTML = `<td>${m.nombre}</td>`;
       tr.addEventListener('click', ()=>{
         marcarSeleccion(tr);
-        input.value = m.materia;
-        nombreOriginal = m.materia;
+        input.value = m.nombre;
+        nombreOriginal = m.nombre;
         updateButtonStates();
       });
       tbody.appendChild(tr);
@@ -317,29 +290,15 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
 
   async function cargarMaterias(selectId=null){
     try{
-      materias = await fetchJson(API);
-      materias.sort((a,b)=> a.materia.localeCompare(b.materia, 'es', {sensitivity:'base'}));
+      const resp = await fetchJson(API);
+      materias = Array.isArray(resp.data) ? resp.data : [];
+      materias.sort((a,b)=> String(a.nombre || "").localeCompare(String(b.nombre || ""), 'es', { sensitivity:'base' }));
       render(selectId);
-
-      if (!purgadaInactivas && materias.some(m => String(m.id_Estado) !== "1")) {
-        purgadaInactivas = true;
-        try{
-          const r = await fetchJson(`${API}?inactive=1`, { method:"DELETE" });
-          if (r.eliminadas > 0) toastSuccess(`Eliminadas ${r.eliminadas} inactivas`);
-          materias = await fetchJson(API);
-          materias.sort((a,b)=> a.materia.localeCompare(b.materia, 'es', {sensitivity:'base'}));
-          render(selectId);
-        }catch(err){
-          console.error(err);
-          toastError(err.message || "No se pudieron eliminar las inactivas");
-        }
-      }
     }catch(err){
       toastError(err.message||"No se pudieron cargar materias");
     }
   }
 
-  // ======= Bloqueo de números y conversión =======
   let lastDigitWarn = 0;
   function warnOnce(txt, type="warn"){
     const now = Date.now();
@@ -421,7 +380,6 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
     }
   });
 
-  // ======= Guardar =======
   btnGuardar.addEventListener("click", async ()=>{
     if(!input.checkValidity()){ input.reportValidity(); return; }
     const nombre = (input.value||"").trim();
@@ -451,7 +409,6 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
     }
   });
 
-  // ======= Modificar =======
   btnModificar.addEventListener("click", async ()=>{
     if(!filaSel){ toastInfo("Selecciona una materia"); return; }
     const nombre = (input.value||"").trim();
@@ -485,7 +442,6 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
     }
   });
 
-  // ======= Eliminar =======
   btnEliminar.addEventListener("click", async ()=>{
     if(!filaSel){ toastInfo("Selecciona una materia"); return; }
     if(isDirty()){
@@ -514,7 +470,6 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
     }
   });
 
-  // ======= NUEVO: Botón Cancelar =======
   if (btnCancelar) {
     btnCancelar.addEventListener("click", ()=>{
       if (!hasUnsaved()) return;
@@ -523,7 +478,6 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
     });
   }
 
-  // Confirmación al salir
   homeLink?.addEventListener("click", async (e)=>{
     if(!hasUnsaved()) return;
     e.preventDefault();
@@ -533,6 +487,5 @@ function existeDuplicadaMateria(nombreNuevo, materias, idIgnorar=null){
     if(ok) window.location.href = homeLink.href;
   });
 
-  // Carga inicial
   cargarMaterias().then(updateButtonStates);
 })();

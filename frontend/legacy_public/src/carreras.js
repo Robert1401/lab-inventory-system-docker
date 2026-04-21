@@ -1,22 +1,17 @@
 /* =========================================================
-   CARRERAS – CRUD (Node/Express + MySQL) via NGINX /api
-   - Carga tabla al abrir
-   - Selección de fila
-   - Botones inteligentes (Guardar/Actualizar/Eliminar)
-   - Toast + confirm modal
+   CARRERAS – CRUD (Node/Express + MySQL)
 ========================================================= */
 
-/* ✅ Importante: usar la misma origin (nginx) */
 const API = "/api/carreras";
 
 /* ========= Elementos ========= */
-const tabla       = document.getElementById("tabla-carreras"); // <tbody id="tabla-carreras">
+const tabla = document.getElementById("tabla-carreras");
 const inputNombre = document.getElementById("nombre");
 
-const btnGuardar    = document.querySelector(".guardar");
+const btnGuardar = document.querySelector(".guardar");
 const btnActualizar = document.querySelector(".actualizar");
-const btnEliminar   = document.querySelector(".eliminar");
-const homeLink      = document.querySelector(".iconos .icono"); // casita
+const btnEliminar = document.querySelector(".eliminar");
+const homeLink = document.querySelector(".iconos .icono");
 
 let carreras = [];
 let idSeleccionado = null;
@@ -25,30 +20,44 @@ let nombreOriginal = "";
 /* ========= Toast ========= */
 function showToast(message, type = "info", duration = 2200) {
   const host = document.getElementById("toast");
-  if (!host) { alert(message); return; }
+  if (!host) {
+    alert(message);
+    return;
+  }
 
-  const icons = { success: "✓", error: "✕", info: "ℹ︎", warn: "⚠︎" };
+  const icons = {
+    success: "✅",
+    error: "❌",
+    info: "ℹ️",
+    warn: "⚠️"
+  };
 
   host.innerHTML = `
     <div class="toast-card ${type}" role="status" aria-live="polite" aria-atomic="true">
-      <div class="toast-icon">${icons[type] || "ℹ︎"}</div>
+      <div class="toast-icon">${icons[type] || "ℹ️"}</div>
       <div class="toast-text">${message}</div>
     </div>
   `;
   host.classList.add("show");
 
-  const hide = () => { host.classList.remove("show"); host.innerHTML = ""; };
+  const hide = () => {
+    host.classList.remove("show");
+    host.innerHTML = "";
+  };
 
   const t = setTimeout(hide, duration);
-  host.onclick = () => { clearTimeout(t); hide(); };
+  host.onclick = () => {
+    clearTimeout(t);
+    hide();
+  };
 }
 
 /* ========= Confirm ========= */
 function showConfirm(texto) {
-  const modal     = document.getElementById("confirm");
-  const card      = modal?.querySelector(".confirm-card");
-  const label     = document.getElementById("confirm-text");
-  const btnOk     = document.getElementById("confirm-aceptar");
+  const modal = document.getElementById("confirm");
+  const card = modal?.querySelector(".confirm-card");
+  const label = document.getElementById("confirm-text");
+  const btnOk = document.getElementById("confirm-aceptar");
   const btnCancel = document.getElementById("confirm-cancelar");
 
   return new Promise((resolve) => {
@@ -61,12 +70,23 @@ function showConfirm(texto) {
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
 
-    const onOk       = (e) => { e.stopPropagation(); close(true); };
-    const onCancel   = (e) => { e?.stopPropagation?.(); close(false); };
-    const onBackdrop = (e) => { if (!card.contains(e.target)) close(false); };
-    const onKey      = (e) => {
+    const onOk = (e) => {
+      e.stopPropagation();
+      close(true);
+    };
+
+    const onCancel = (e) => {
+      e.stopPropagation();
+      close(false);
+    };
+
+    const onBackdrop = (e) => {
+      if (!card.contains(e.target)) close(false);
+    };
+
+    const onKey = (e) => {
       if (e.key === "Escape") close(false);
-      if (e.key === "Enter")  close(true);
+      if (e.key === "Enter") close(true);
     };
 
     function close(v) {
@@ -86,16 +106,19 @@ function showConfirm(texto) {
   });
 }
 
-/* ========= Fetch helper (robusto) ========= */
+/* ========= Fetch helper ========= */
 async function fetchJson(url, options = {}) {
   const res = await fetch(url, options);
 
-  // intenta leer JSON, si no, lee texto
   const ct = res.headers.get("content-type") || "";
   let data = null;
 
   if (ct.includes("application/json")) {
-    try { data = await res.json(); } catch { data = null; }
+    try {
+      data = await res.json();
+    } catch {
+      data = null;
+    }
   } else {
     const t = await res.text().catch(() => "");
     data = t ? { message: t } : null;
@@ -110,17 +133,56 @@ async function fetchJson(url, options = {}) {
   return data;
 }
 
-/* =========================================================
-   Estado UI
-========================================================= */
+/* ========= Normalización ========= */
 function normalize(s) {
   return (s || "")
     .toString()
     .trim()
     .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
+function limpiarTextoCarrera(s) {
+  return normalize(s)
+    .replace(/\b(ingenieria|ingeniería|licenciatura|lic|ing)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function tokens(s) {
+  return limpiarTextoCarrera(s).split(" ").filter(Boolean);
+}
+
+function jaccard(a, b) {
+  const A = new Set(tokens(a));
+  const B = new Set(tokens(b));
+
+  let inter = 0;
+  A.forEach((x) => {
+    if (B.has(x)) inter++;
+  });
+
+  const union = A.size + B.size - inter;
+  return union === 0 ? 0 : inter / union;
+}
+
+function esNombreMuyParecido(a, b) {
+  const na = limpiarTextoCarrera(a);
+  const nb = limpiarTextoCarrera(b);
+
+  if (!na || !nb) return false;
+  if (na === nb) return true;
+  if (na.includes(nb) || nb.includes(na)) return true;
+
+  const sim = jaccard(na, nb);
+  return sim >= 0.75;
+}
+
+/* ========= Estado UI ========= */
 function isDirty() {
   if (idSeleccionado == null) return false;
   return normalize(inputNombre.value) !== normalize(nombreOriginal);
@@ -128,32 +190,30 @@ function isDirty() {
 
 function hasUnsavedOrIncomplete() {
   const texto = (inputNombre.value || "").trim();
-  if (idSeleccionado == null) return texto.length > 0; // escribió algo sin guardar
-  return isDirty(); // está editando
+  if (idSeleccionado == null) return texto.length > 0;
+  return isDirty();
 }
 
 function updateButtonStates() {
   const hayTexto = (inputNombre.value || "").trim().length > 0;
 
   if (idSeleccionado == null) {
-    // Modo NUEVO
-    btnGuardar.disabled    = !hayTexto;
+    btnGuardar.disabled = !hayTexto;
     btnActualizar.disabled = true;
-    btnEliminar.disabled   = true;
+    btnEliminar.disabled = true;
     btnEliminar.title = "";
     return;
   }
 
-  // Modo EDICIÓN
   const changed = isDirty();
-  btnGuardar.disabled    = true;
+  btnGuardar.disabled = true;
   btnActualizar.disabled = !hayTexto || !changed;
-  btnEliminar.disabled   = changed; // no dejar borrar si está editando
+  btnEliminar.disabled = changed;
   btnEliminar.title = changed ? "Tienes cambios sin guardar. Actualiza primero." : "";
 }
 
 function limpiarSeleccion() {
-  [...tabla.querySelectorAll("tr")].forEach(tr => tr.classList.remove("seleccionada"));
+  [...tabla.querySelectorAll("tr")].forEach((tr) => tr.classList.remove("seleccionada"));
   idSeleccionado = null;
   nombreOriginal = "";
   inputNombre.value = "";
@@ -161,17 +221,15 @@ function limpiarSeleccion() {
 }
 
 function seleccionarFilaVisual(tr) {
-  [...tabla.querySelectorAll('tr')].forEach(x => x.classList.remove("seleccionada"));
+  [...tabla.querySelectorAll("tr")].forEach((x) => x.classList.remove("seleccionada"));
   tr.classList.add("seleccionada");
 }
 
-/* =========================================================
-   Render tabla
-========================================================= */
+/* ========= Tabla ========= */
 function pintarTabla() {
   tabla.innerHTML = "";
 
-  carreras.forEach(c => {
+  carreras.forEach((c) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>${c.nombre}</td>`;
 
@@ -187,13 +245,18 @@ function pintarTabla() {
   });
 }
 
-/* =========================================================
-   Cargar carreras
-========================================================= */
+/* ========= Cargar ========= */
 async function cargarCarreras() {
   try {
     const data = await fetchJson(API, { method: "GET" });
     carreras = Array.isArray(data) ? data : [];
+
+    carreras.sort((a, b) =>
+      String(a.nombre || "").localeCompare(String(b.nombre || ""), "es", {
+        sensitivity: "base"
+      })
+    );
+
     pintarTabla();
   } catch (err) {
     console.error("cargarCarreras:", err);
@@ -201,29 +264,29 @@ async function cargarCarreras() {
   }
 }
 
-/* =========================================================
-   Duplicado simple (exacto normalizado)
-========================================================= */
+/* ========= Validación ========= */
 function existeNombre(nombre, idIgnorar = null) {
-  const n = normalize(nombre);
-  return carreras.some(c => (idIgnorar == null || c.id_Carrera !== idIgnorar) && normalize(c.nombre) === n);
+  return carreras.some((c) => {
+    if (idIgnorar != null && c.id_Carrera === idIgnorar) return false;
+    return esNombreMuyParecido(c.nombre, nombre);
+  });
 }
 
-/* =========================================================
-   Eventos
-========================================================= */
+/* ========= Eventos ========= */
 document.addEventListener("DOMContentLoaded", async () => {
-  // Si el JS realmente se ejecuta, verás esto en consola:
   console.log("[carreras.js] cargado ✅");
 
   await cargarCarreras();
   updateButtonStates();
 
-  inputNombre.addEventListener("input", updateButtonStates);
+  inputNombre.addEventListener("input", () => {
+    inputNombre.value = inputNombre.value.replace(/[0-9]/g, "");
+    updateButtonStates();
+  });
 
-  // Confirmación al salir por casita si hay cambios
   homeLink?.addEventListener("click", async (e) => {
     if (!hasUnsavedOrIncomplete()) return;
+
     e.preventDefault();
 
     const ok = await showConfirm(
@@ -235,15 +298,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
-/* =========================================================
-   Guardar (nuevo)
-========================================================= */
+/* ========= Guardar ========= */
 btnGuardar.addEventListener("click", async () => {
   const nombre = (inputNombre.value || "").trim();
   if (!nombre) return showToast("Escribe un nombre.", "info");
 
   if (existeNombre(nombre)) {
-    return showToast("❗ Esa carrera ya existe (duplicado).", "warn", 2600);
+    return showToast("Ya existe una carrera igual o demasiado parecida.", "warn", 2800);
   }
 
   try {
@@ -253,23 +314,21 @@ btnGuardar.addEventListener("click", async () => {
       body: JSON.stringify({ nombre })
     });
 
-    // tu API retorna {id_Carrera, nombre}
     carreras.push(created);
-    // ordenar como tu query ORDER BY nombre
-    carreras.sort((a, b) => a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" }));
+    carreras.sort((a, b) =>
+      a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
+    );
 
     pintarTabla();
     limpiarSeleccion();
-    showToast("✅ Guardado.", "success");
+    showToast("Carrera guardada correctamente.", "success");
   } catch (err) {
     console.error("guardar:", err);
     showToast(err.message || "Error al guardar.", "error", 3200);
   }
 });
 
-/* =========================================================
-   Actualizar
-========================================================= */
+/* ========= Actualizar ========= */
 btnActualizar.addEventListener("click", async () => {
   if (idSeleccionado == null) return showToast("Selecciona una carrera.", "info");
 
@@ -277,7 +336,7 @@ btnActualizar.addEventListener("click", async () => {
   if (!nombre) return showToast("Escribe un nombre.", "info");
 
   if (existeNombre(nombre, idSeleccionado)) {
-    return showToast("❗ Ya existe otra carrera con ese nombre.", "warn", 2600);
+    return showToast("Ya existe otra carrera igual o demasiado parecida.", "warn", 2800);
   }
 
   try {
@@ -287,41 +346,43 @@ btnActualizar.addEventListener("click", async () => {
       body: JSON.stringify({ id_Carrera: idSeleccionado, nombre })
     });
 
-    const idx = carreras.findIndex(x => x.id_Carrera === idSeleccionado);
+    const idx = carreras.findIndex((x) => x.id_Carrera === idSeleccionado);
     if (idx !== -1) carreras[idx].nombre = nombre;
 
-    carreras.sort((a, b) => a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" }));
+    carreras.sort((a, b) =>
+      a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
+    );
+
     pintarTabla();
     limpiarSeleccion();
-
-    showToast("✏️ Actualizada.", "success");
+    showToast("Carrera actualizada correctamente.", "success");
   } catch (err) {
     console.error("actualizar:", err);
     showToast(err.message || "Error al actualizar.", "error", 3200);
   }
 });
 
-/* =========================================================
-   Eliminar
-========================================================= */
+/* ========= Eliminar ========= */
 btnEliminar.addEventListener("click", async () => {
   if (idSeleccionado == null) return showToast("Selecciona una carrera.", "info");
   if (isDirty()) return showToast("Tienes cambios sin guardar. Actualiza primero.", "warn", 2600);
 
-  const c = carreras.find(x => x.id_Carrera === idSeleccionado);
+  const c = carreras.find((x) => x.id_Carrera === idSeleccionado);
   const nombreSel = c?.nombre || "esta carrera";
 
-  const ok = await showConfirm(`Se borrará: "${nombreSel}".\n¿Seguro?`);
+  const ok = await showConfirm(`Se eliminará "${nombreSel}".\n¿Deseas continuar?`);
   if (!ok) return;
 
   try {
-    await fetchJson(`${API}?id=${encodeURIComponent(String(idSeleccionado))}`, { method: "DELETE" });
+    await fetchJson(`${API}?id=${encodeURIComponent(String(idSeleccionado))}`, {
+      method: "DELETE"
+    });
 
-    carreras = carreras.filter(x => x.id_Carrera !== idSeleccionado);
+    carreras = carreras.filter((x) => x.id_Carrera !== idSeleccionado);
     pintarTabla();
     limpiarSeleccion();
 
-    showToast("🗑️ Eliminada.", "success");
+    showToast("Carrera eliminada correctamente.", "success");
   } catch (err) {
     console.error("eliminar:", err);
     showToast(err.message || "Error al eliminar.", "error", 3200);

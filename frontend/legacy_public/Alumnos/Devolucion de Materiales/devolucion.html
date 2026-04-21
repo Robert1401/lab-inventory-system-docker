@@ -11,38 +11,29 @@
 <body>
   <div class="frame">
     <section aria-label="Devolución de material">
-      <!-- Header -->
       <header>
         <div class="logos">
           <img class="logo" src="../../assets/logo1.png" alt="Secretaría de Educación">
         </div>
+
         <h1 class="title">
           DEVOLUCIÓN DEPARTAMENTO DE<br>
           INGENIERÍA ELÉCTRICA–ELECTRÓNICA
         </h1>
+
         <div class="logos" style="justify-content:flex-end">
           <img class="logo" src="../../assets/escudo.png" alt="TecNM">
         </div>
       </header>
 
-      <!-- Panel -->
       <div class="panel">
         <div class="grid">
           <!-- Columna izquierda -->
           <div class="col izquierda">
             <h2 class="subtitle">Material Prestado</h2>
             <div class="listado" id="listaPrestamos">
-              <div class="item">
-                <i class="fa-solid fa-clipboard-list icono"></i>
-                <input type="text" placeholder="Nombre del material" readonly>
-              </div>
-              <div class="item">
-                <i class="fa-solid fa-clipboard-list icono"></i>
-                <input type="text" placeholder="Nombre del material" readonly>
-              </div>
-              <div class="item">
-                <i class="fa-solid fa-clipboard-list icono"></i>
-                <input type="text" placeholder="Nombre del material" readonly>
+              <div class="item" style="justify-content:center;color:#777">
+                Cargando materiales...
               </div>
             </div>
           </div>
@@ -50,42 +41,59 @@
           <!-- Columna derecha -->
           <div class="col derecha">
             <h2 class="subtitle">Devolución de Material</h2>
+
             <form id="formDevolucion">
               <label class="campo">
                 <span>Fecha:</span>
                 <input type="date" id="fecha" required>
               </label>
+
+              <label class="campo">
+                <span>Folio / Vale:</span>
+                <input type="text" id="noVale" readonly>
+              </label>
+
               <label class="campo">
                 <span>Materia:</span>
-                <input type="text" id="materia" placeholder="Ej. Electrónica Analógica" required>
+                <input type="text" id="materia" readonly>
               </label>
+
               <label class="campo">
                 <span>Maestro:</span>
-                <input type="text" id="maestro" placeholder="Nombre del maestro" required>
+                <input type="text" id="maestro" readonly>
               </label>
+
               <label class="campo">
                 <span>Mesa:</span>
-                <input type="text" id="mesa" placeholder="Ej. A1" required>
+                <input type="text" id="mesa" readonly>
+              </label>
+
+              <label class="campo">
+                <span>No. Control:</span>
+                <input type="text" id="numeroControl" readonly>
+              </label>
+
+              <label class="campo">
+                <span>Alumno:</span>
+                <input type="text" id="alumno" readonly>
               </label>
             </form>
           </div>
         </div>
 
-        <!-- Acciones -->
         <div class="actions">
-          <button class="btn btn-primary" id="btnConfirmar">
+          <button class="btn btn-primary" id="btnConfirmar" type="button">
             <i class="fa-solid fa-box-archive"></i> Confirmar devolución de material
           </button>
-          <button class="btn btn-ghost" id="btnCancelar">
+
+          <button class="btn btn-ghost" id="btnCancelar" type="button">
             <i class="fa-solid fa-xmark"></i> Cancelar
           </button>
         </div>
-
       </div>
     </section>
   </div>
 
-  <!-- Aviso centrado -->
   <div id="noticeHost" class="notice-host" aria-live="polite" aria-atomic="true"></div>
 
   <script src="../../src/devolucion.js"></script>
