@@ -1,56 +1,138 @@
-# 🧪 Electronics Lab Inventory System (Dockerized)
+<h1 align="center">🧪 Electronics Lab Inventory System</h1>
 
-![Docker](https://img.shields.io/badge/Docker-Enabled-blue?logo=docker)
-![Angular](https://img.shields.io/badge/Angular-Frontend-red?logo=angular)
-![Node.js](https://img.shields.io/badge/Node.js-Backend-green?logo=node.js)
-![MySQL](https://img.shields.io/badge/MySQL-Database-orange?logo=mysql)
-![Status](https://img.shields.io/badge/Status-Active-success)
+<p align="center">
+  <b>Full-Stack | Dockerized | DevOps Ready</b><br>
+  Inventory management system for an electronics laboratory
+</p>
 
-Full-stack web application for managing an electronics laboratory inventory.  
-Built with Angular, Node.js (Express), MySQL, and Docker.
-
----
-
-## 📖 Description
-
-This system allows efficient management of materials in an electronics laboratory, including inventory tracking, loan and return processes, and user role control.
+<p align="center">
+  <img src="https://img.shields.io/badge/Docker-Containerized-blue?logo=docker"/>
+  <img src="https://img.shields.io/badge/Angular-Frontend-red?logo=angular"/>
+  <img src="https://img.shields.io/badge/Node.js-Backend-green?logo=node.js"/>
+  <img src="https://img.shields.io/badge/MySQL-Database-orange?logo=mysql"/>
+  <img src="https://img.shields.io/badge/Status-Active-success"/>
+</p>
 
 ---
 
-## 🚀 Features
+## 🚀 Overview
 
-- 👤 User roles (Admin, Auxiliar, Student)
-- 📦 Inventory management
-- 🔄 Loan and return tracking
-- 🗂️ Materials and categories management
-- 🔍 Search and filtering
-- 🌐 REST API integration
+This project is a **full-stack web application** designed to manage an electronics laboratory inventory efficiently.
+It integrates **frontend, backend, database, and containerization** into a complete system ready for real-world environments.
 
 ---
 
-## 🛠️ Technologies
+## ✨ Key Features
 
-- **Frontend:** Angular  
-- **Backend:** Node.js + Express  
-- **Database:** MySQL  
-- **DevOps:** Docker & Docker Compose  
-- **Version Control:** Git & GitHub  
+* 🔐 Authentication & role management (Admin / Auxiliar / Student)
+* 📦 Inventory control and tracking
+* 🔄 Loan and return system
+* 🔍 Smart search and filtering
+* 📊 Organization by categories and academic areas
 
 ---
 
-## 🐳 How to Run the Project
+## 🧠 Architecture
+
+```mermaid
+flowchart LR
+    A[Angular Frontend] --> B[Node.js API]
+    B --> C[MySQL Database]
+    B --> D[Docker Containers]
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer      | Technology              |
+| ---------- | ----------------------- |
+| Frontend   | Angular                 |
+| Backend    | Node.js + Express       |
+| Database   | MySQL                   |
+| DevOps     | Docker & Docker Compose |
+| Versioning | Git + GitHub            |
+
+---
+
+## 🐳 Run with Docker
 
 ### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Robert1401/lab-inventory-system-docker.git
 cd lab-inventory-system-docker
+```
 
-Run with Docker
+---
+
+### 2. Start containers
+
+```bash
 docker-compose up --build
+```
 
-3. Access the application
+---
 
-Once the containers are running, open your browser:
+### 3. Access the application
+
+Open your browser and go to:
 
 http://localhost:8081/public/Login/index.html
+
+---
+
+## 📂 Project Structure
+
+```text
+backend/        → REST API (Node.js)
+frontend/       → Angular application
+db/             → Database configuration
+docker-compose.yml
+```
+
+---
+
+## 👥 User Roles
+
+| Role     | Permissions          |
+| -------- | -------------------- |
+| Admin    | Full system control  |
+| Auxiliar | Inventory management |
+| Student  | Request materials    |
+
+---
+
+## 📸 System Preview
+
+*(Add screenshots here to improve presentation)*
+
+---
+
+## 🧪 DevOps & CI/CD
+
+* Docker containerization
+* Docker Compose orchestration
+* GitLab CI/CD pipeline integration
+
+---
+
+## 📌 Notes
+
+* Make sure Docker is running
+* Verify port 8081 is available
+* Use `docker ps` to verify containers
+
+---
+
+## 👨‍💻 Author
+
+**Roberto Aram López Rodríguez**
+Ingeniería en Sistemas Computacionales
+Instituto Tecnológico de Saltillo
+
+---
+
+## ⭐ Support
+
+If you like this project, consider giving it a ⭐ on GitHub!
